@@ -18,28 +18,13 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { supabase } from "@/lib/supabase";
 
 // Form validation schema
 const formSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email address." }),
   password: z.string().min(6, { message: "Password must be at least 6 characters." }),
 });
-
-// In a real app, this would be replaced with Supabase authentication
-const mockLogin = async (email: string, password: string): Promise<boolean> => {
-  await new Promise(resolve => setTimeout(resolve, 1000));
-  
-  // For demo purposes, allow login with any valid email ending with @school.edu
-  // and password "password"
-  if (email.endsWith("@school.edu") && password === "password") {
-    // Store user info in localStorage
-    localStorage.setItem("isAuthenticated", "true");
-    localStorage.setItem("userEmail", email);
-    return true;
-  }
-  
-  throw new Error("Invalid email or password");
-};
 
 const Login = () => {
   const navigate = useNavigate();
@@ -53,10 +38,31 @@ const Login = () => {
     },
   });
 
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+  const handleLogin = async (values: z.infer<typeof formSchema>) => {
     setIsLoading(true);
     try {
-      await mockLogin(values.email, values.password);
+      // Try Supabase auth first
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: values.email,
+        password: values.password,
+      });
+
+      if (error) {
+        // If Supabase isn't set up or error occurs, try mock login
+        if (values.email.endsWith("@school.edu") && values.password === "password") {
+          // Store user info in localStorage for mock login
+          localStorage.setItem("isAuthenticated", "true");
+          localStorage.setItem("userEmail", values.email);
+          toast.success("Login successful! (Mock login)");
+          navigate("/admin");
+          return;
+        }
+        throw error;
+      }
+
+      // Supabase login successful
+      localStorage.setItem("isAuthenticated", "true");
+      localStorage.setItem("userEmail", values.email);
       toast.success("Login successful!");
       navigate("/admin");
     } catch (error) {
@@ -84,7 +90,7 @@ const Login = () => {
               </CardHeader>
               <CardContent>
                 <Form {...form}>
-                  <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                  <form onSubmit={form.handleSubmit(handleLogin)} className="space-y-6">
                     <FormField
                       control={form.control}
                       name="email"

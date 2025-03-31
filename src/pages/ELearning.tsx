@@ -1,13 +1,35 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Book } from "lucide-react";
+import { Book as BookIcon } from "lucide-react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Layout from "@/components/layout/Layout";
+import { supabase, Book } from "@/lib/supabase";
+import { toast } from "sonner";
 
-// Mock data for now - this would come from Supabase
+const fetchBooks = async (): Promise<Book[]> => {
+  const { data, error } = await supabase
+    .from('books')
+    .select('*')
+    .order('created_at', { ascending: false });
+  
+  if (error) {
+    console.error('Error fetching books:', error);
+    throw new Error(error.message);
+  }
+  
+  // If no data is found, return the mock data for demonstration
+  if (!data || data.length === 0) {
+    console.log('No books found in Supabase, using mock data');
+    return mockBooks as unknown as Book[];
+  }
+  
+  return data;
+};
+
+// Mock data for fallback when Supabase is not set up
 const mockBooks = [
   {
     id: 1,
@@ -59,26 +81,37 @@ const mockBooks = [
   }
 ];
 
-// This would be replaced with a real Supabase query
-const fetchBooks = async () => {
-  // Simulating network delay
-  await new Promise(resolve => setTimeout(resolve, 500));
-  return mockBooks;
-};
-
 const ELearning = () => {
   const [searchTerm, setSearchTerm] = useState("");
   
-  const { data: books = [], isLoading } = useQuery({
+  const { data: books = [], isLoading, error } = useQuery({
     queryKey: ["books"],
     queryFn: fetchBooks,
+    onError: (err) => {
+      console.error('Failed to fetch books:', err);
+      toast.error('Failed to load books. Please try again later.');
+    }
   });
+  
+  useEffect(() => {
+    if (error) {
+      console.error('Error in books query:', error);
+    }
+  }, [error]);
   
   const filteredBooks = books.filter(book => 
     book.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
     book.subject.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    book.description.toLowerCase().includes(searchTerm.toLowerCase())
+    book.description?.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const handleViewBook = (book: Book) => {
+    if (book.fileUrl) {
+      window.open(book.fileUrl, '_blank');
+    } else {
+      toast.info('This book is not available for viewing yet.');
+    }
+  };
 
   return (
     <Layout>
@@ -99,7 +132,7 @@ const ELearning = () => {
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="pr-10"
                 />
-                <Book className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                <BookIcon className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
               </div>
             </div>
           </div>
@@ -140,7 +173,7 @@ const ELearning = () => {
                         <p className="text-sm text-gray-500 line-clamp-3">{book.description}</p>
                       </CardContent>
                       <CardFooter>
-                        <Button className="w-full">View Book</Button>
+                        <Button className="w-full" onClick={() => handleViewBook(book)}>View Book</Button>
                       </CardFooter>
                     </Card>
                   ))}

@@ -1,8 +1,9 @@
 
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Book, Upload, BookOpen, User, LogOut } from "lucide-react";
+import { Book as BookIcon, Upload, BookOpen, User, LogOut } from "lucide-react";
 import { toast } from "sonner";
+import { useQuery } from "@tanstack/react-query";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import {
@@ -15,8 +16,9 @@ import {
 } from "@/components/ui/table";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { supabase, Book } from "@/lib/supabase";
 
-// Mock data - would come from Supabase in real app
+// Mock data fallback
 const mockBooks = [
   {
     id: 1,
@@ -60,29 +62,80 @@ const mockBooks = [
   },
 ];
 
+const fetchBooksAdmin = async (): Promise<Book[]> => {
+  const { data, error } = await supabase
+    .from('books')
+    .select('*')
+    .order('created_at', { ascending: false });
+  
+  if (error) {
+    console.error('Error fetching books for admin:', error);
+    throw new Error(error.message);
+  }
+  
+  // If no data is found, return the mock data for demonstration
+  if (!data || data.length === 0) {
+    console.log('No books found in Supabase for admin, using mock data');
+    return mockBooks as unknown as Book[];
+  }
+  
+  return data;
+};
+
 const AdminDashboard = () => {
   const navigate = useNavigate();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userEmail, setUserEmail] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
+
+  // Fetch books from Supabase
+  const { data: books = [], isLoading: isBooksLoading, refetch: refetchBooks } = useQuery({
+    queryKey: ["admin-books"],
+    queryFn: fetchBooksAdmin,
+    enabled: isAuthenticated,
+  });
 
   useEffect(() => {
     // Check authentication status
-    const authStatus = localStorage.getItem("isAuthenticated");
-    const email = localStorage.getItem("userEmail");
+    const checkAuth = async () => {
+      // Try to get the session from Supabase
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (session) {
+        setIsAuthenticated(true);
+        setUserEmail(session.user.email || "");
+        setIsLoading(false);
+        return;
+      }
+      
+      // Fallback to local storage auth (for mock login)
+      const authStatus = localStorage.getItem("isAuthenticated");
+      const email = localStorage.getItem("userEmail");
+      
+      setIsAuthenticated(authStatus === "true");
+      setUserEmail(email || "");
+      setIsLoading(false);
+      
+      // Redirect if not authenticated
+      if (authStatus !== "true" && !session) {
+        toast.error("Please log in to access the admin dashboard");
+        navigate("/login");
+      }
+    };
     
-    setIsAuthenticated(authStatus === "true");
-    setUserEmail(email || "");
-    setIsLoading(false);
-    
-    // Redirect if not authenticated
-    if (authStatus !== "true") {
-      toast.error("Please log in to access the admin dashboard");
-      navigate("/login");
-    }
+    checkAuth();
   }, [navigate]);
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    try {
+      // Try to sign out from Supabase
+      await supabase.auth.signOut();
+    } catch (error) {
+      console.error("Supabase logout error:", error);
+    }
+    
+    // Clear local storage regardless
     localStorage.removeItem("isAuthenticated");
     localStorage.removeItem("userEmail");
     toast.success("Logged out successfully");
@@ -90,9 +143,30 @@ const AdminDashboard = () => {
   };
 
   const handleUpload = () => {
-    // In a real app, this would open a file upload dialog
-    // and actually upload to Supabase
+    // In a real app, this would open a file upload dialog and upload to Supabase Storage
     toast.success("Upload feature would open here");
+  };
+
+  const filteredBooks = books.filter(book => 
+    book.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    book.subject.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const handleDeleteBook = async (id: string) => {
+    try {
+      const { error } = await supabase
+        .from('books')
+        .delete()
+        .eq('id', id);
+      
+      if (error) throw error;
+      
+      toast.success("Book deleted successfully");
+      refetchBooks();
+    } catch (error) {
+      console.error("Error deleting book:", error);
+      toast.error("Failed to delete book");
+    }
   };
 
   if (isLoading) {
@@ -140,8 +214,8 @@ const AdminDashboard = () => {
             </CardHeader>
             <CardContent>
               <div className="flex items-center">
-                <Book className="h-8 w-8 text-primary mr-4" />
-                <span className="text-3xl font-bold">{mockBooks.length}</span>
+                <BookIcon className="h-8 w-8 text-primary mr-4" />
+                <span className="text-3xl font-bold">{books.length}</span>
               </div>
             </CardContent>
           </Card>
@@ -155,7 +229,7 @@ const AdminDashboard = () => {
               <div className="flex items-center">
                 <BookOpen className="h-8 w-8 text-primary mr-4" />
                 <span className="text-3xl font-bold">
-                  {mockBooks.reduce((sum, book) => sum + book.downloads, 0)}
+                  {books.reduce((sum, book) => sum + (book.downloads || 0), 0)}
                 </span>
               </div>
             </CardContent>
@@ -187,40 +261,58 @@ const AdminDashboard = () => {
                 <div className="flex items-center justify-between">
                   <CardTitle>Book Library</CardTitle>
                   <div className="w-64">
-                    <Input type="text" placeholder="Search books..." />
+                    <Input 
+                      type="text" 
+                      placeholder="Search books..." 
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                    />
                   </div>
                 </div>
               </CardHeader>
               <CardContent>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Title</TableHead>
-                      <TableHead>Subject</TableHead>
-                      <TableHead>Grade</TableHead>
-                      <TableHead>Uploaded</TableHead>
-                      <TableHead>Downloads</TableHead>
-                      <TableHead>Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {mockBooks.map((book) => (
-                      <TableRow key={book.id}>
-                        <TableCell className="font-medium">{book.title}</TableCell>
-                        <TableCell>{book.subject}</TableCell>
-                        <TableCell>{book.grade}</TableCell>
-                        <TableCell>{book.uploadedAt}</TableCell>
-                        <TableCell>{book.downloads}</TableCell>
-                        <TableCell>
-                          <div className="flex space-x-2">
-                            <Button size="sm" variant="outline">Edit</Button>
-                            <Button size="sm" variant="outline" className="text-red-500">Delete</Button>
-                          </div>
-                        </TableCell>
+                {isBooksLoading ? (
+                  <div className="flex justify-center py-10">
+                    <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
+                  </div>
+                ) : (
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Title</TableHead>
+                        <TableHead>Subject</TableHead>
+                        <TableHead>Grade</TableHead>
+                        <TableHead>Uploaded</TableHead>
+                        <TableHead>Downloads</TableHead>
+                        <TableHead>Actions</TableHead>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+                    </TableHeader>
+                    <TableBody>
+                      {filteredBooks.map((book) => (
+                        <TableRow key={book.id}>
+                          <TableCell className="font-medium">{book.title}</TableCell>
+                          <TableCell>{book.subject}</TableCell>
+                          <TableCell>{book.grade}</TableCell>
+                          <TableCell>{new Date(book.created_at).toLocaleDateString()}</TableCell>
+                          <TableCell>{book.downloads || 0}</TableCell>
+                          <TableCell>
+                            <div className="flex space-x-2">
+                              <Button size="sm" variant="outline">Edit</Button>
+                              <Button 
+                                size="sm" 
+                                variant="outline" 
+                                className="text-red-500"
+                                onClick={() => handleDeleteBook(book.id)}
+                              >
+                                Delete
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                )}
               </CardContent>
             </Card>
           </TabsContent>
