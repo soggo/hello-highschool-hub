@@ -8,7 +8,7 @@ pnpm-debug.log*
 lerna-debug.log*
 
 node_modules
-lib/supabase.ts
+/src/lib/supabase.ts
 dist
 dist-ssr
 *.local
