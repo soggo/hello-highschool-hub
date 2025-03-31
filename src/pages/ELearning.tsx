@@ -87,9 +87,11 @@ const ELearning = () => {
   const { data: books = [], isLoading, error } = useQuery({
     queryKey: ["books"],
     queryFn: fetchBooks,
-    onError: (err) => {
-      console.error('Failed to fetch books:', err);
-      toast.error('Failed to load books. Please try again later.');
+    meta: {
+      onError: (err: Error) => {
+        console.error('Failed to fetch books:', err);
+        toast.error('Failed to load books. Please try again later.');
+      }
     }
   });
   
