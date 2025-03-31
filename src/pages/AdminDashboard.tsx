@@ -1,7 +1,6 @@
-
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Book as BookIcon, Upload, BookOpen, User, LogOut } from "lucide-react";
+import { Book as BookIcon, BookOpen, User, LogOut } from "lucide-react";
 import { toast } from "sonner";
 import { useQuery } from "@tanstack/react-query";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -17,6 +16,7 @@ import {
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { supabase, Book } from "@/lib/supabase";
+import FileUploadComponent from "@/components/FileUploadComponent";
 
 // Mock data fallback
 const mockBooks = [
@@ -142,11 +142,6 @@ const AdminDashboard = () => {
     navigate("/login");
   };
 
-  const handleUpload = () => {
-    // In a real app, this would open a file upload dialog and upload to Supabase Storage
-    toast.success("Upload feature would open here");
-  };
-
   const filteredBooks = books.filter(book => 
     book.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
     book.subject.toLowerCase().includes(searchTerm.toLowerCase())
@@ -237,14 +232,8 @@ const AdminDashboard = () => {
           
           <Card className="bg-primary text-white">
             <CardContent className="pt-6">
-              <Button 
-                variant="secondary" 
-                className="w-full" 
-                onClick={handleUpload}
-              >
-                <Upload className="h-4 w-4 mr-2" />
-                Upload New Book
-              </Button>
+              {/* Replace the old upload button with our new component */}
+              <FileUploadComponent onUploadComplete={refetchBooks} />
             </CardContent>
           </Card>
         </div>
