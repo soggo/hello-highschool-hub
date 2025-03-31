@@ -29,13 +29,12 @@ const fetchBooks = async (): Promise<Book[]> => {
   return data;
 };
 
-// Mock data for fallback when Supabase is not set up
+// Mock data for fallback when no books are found in Supabase
 const mockBooks = [
   {
     id: 1,
     title: "Calculus Fundamentals",
     description: "A comprehensive guide to calculus for high school students.",
-    coverUrl: "https://placehold.co/400x600/e5deff/333333?text=Calculus",
     subject: "Mathematics",
     grade: "12"
   },
@@ -43,7 +42,6 @@ const mockBooks = [
     id: 2,
     title: "English Literature Classics",
     description: "Analysis of classic literature works for advanced students.",
-    coverUrl: "https://placehold.co/400x600/d3e4fd/333333?text=English",
     subject: "English",
     grade: "11-12"
   },
@@ -51,7 +49,6 @@ const mockBooks = [
     id: 3,
     title: "Biology: The Living World",
     description: "Exploring the fundamentals of biology and life sciences.",
-    coverUrl: "https://placehold.co/400x600/f2fce2/333333?text=Biology",
     subject: "Science",
     grade: "10"
   },
@@ -59,7 +56,6 @@ const mockBooks = [
     id: 4,
     title: "World History: Modern Era",
     description: "A detailed look at world history from the 18th century to present day.",
-    coverUrl: "https://placehold.co/400x600/fef7cd/333333?text=History",
     subject: "History",
     grade: "11"
   },
@@ -67,7 +63,6 @@ const mockBooks = [
     id: 5,
     title: "Chemistry Essentials",
     description: "Core concepts in chemistry with practical experiments.",
-    coverUrl: "https://placehold.co/400x600/ffdee2/333333?text=Chemistry",
     subject: "Science",
     grade: "11"
   },
@@ -75,7 +70,6 @@ const mockBooks = [
     id: 6,
     title: "Computer Science Principles",
     description: "Introduction to programming and computer science concepts.",
-    coverUrl: "https://placehold.co/400x600/e5deff/333333?text=CS",
     subject: "Computer Science",
     grade: "9-12"
   }
@@ -153,13 +147,6 @@ const ELearning = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                   {filteredBooks.map((book) => (
                     <Card key={book.id} className="overflow-hidden transition-all duration-200 hover:shadow-lg">
-                      <div className="aspect-[3/4] overflow-hidden bg-gray-100">
-                        <img
-                          src={book.coverUrl}
-                          alt={book.title}
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
                       <CardHeader className="pb-2">
                         <div className="flex justify-between items-start">
                           <div>
