@@ -1,7 +1,7 @@
 
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Menu, X, Book, Calendar, GraduationCap, Phone } from 'lucide-react';
+import { Menu, X, Book, Calendar, GraduationCap, Phone, LogIn } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const Header = () => {
@@ -29,11 +29,8 @@ const Header = () => {
           <Link to="/about" className="font-medium hover:text-primary transition-colors">
             About
           </Link>
-          <Link to="/academics" className="font-medium hover:text-primary transition-colors">
-            Academics
-          </Link>
-          <Link to="/athletics" className="font-medium hover:text-primary transition-colors">
-            Athletics
+          <Link to="/elearning" className="font-medium hover:text-primary transition-colors">
+            E-Learning
           </Link>
           <Link to="/contact" className="font-medium hover:text-primary transition-colors">
             Contact
@@ -41,7 +38,12 @@ const Header = () => {
         </nav>
 
         <div className="hidden md:block">
-          <Button>Portal Login</Button>
+          <Button asChild>
+            <Link to="/login">
+              <LogIn className="mr-2 h-4 w-4" />
+              Portal Login
+            </Link>
+          </Button>
         </div>
 
         {/* Mobile Menu Button */}
@@ -74,20 +76,12 @@ const Header = () => {
               About
             </Link>
             <Link
-              to="/academics"
+              to="/elearning"
               className="flex items-center gap-2 py-2 px-3 hover:bg-gray-50 rounded-md"
               onClick={() => setMobileMenuOpen(false)}
             >
               <GraduationCap className="h-5 w-5" />
-              Academics
-            </Link>
-            <Link
-              to="/athletics"
-              className="flex items-center gap-2 py-2 px-3 hover:bg-gray-50 rounded-md"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              <Calendar className="h-5 w-5" />
-              Athletics
+              E-Learning
             </Link>
             <Link
               to="/contact"
@@ -97,7 +91,12 @@ const Header = () => {
               <Phone className="h-5 w-5" />
               Contact
             </Link>
-            <Button className="w-full">Portal Login</Button>
+            <Button asChild className="w-full">
+              <Link to="/login" onClick={() => setMobileMenuOpen(false)}>
+                <LogIn className="mr-2 h-4 w-4" />
+                Portal Login
+              </Link>
+            </Button>
           </div>
         </div>
       )}
