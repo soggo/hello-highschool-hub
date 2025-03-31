@@ -1,7 +1,7 @@
 
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Menu, X, Book, Calendar, Users, GraduationCap } from 'lucide-react';
+import { Menu, X, Book, Calendar, GraduationCap, Phone } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const Header = () => {
@@ -34,9 +34,6 @@ const Header = () => {
           </Link>
           <Link to="/athletics" className="font-medium hover:text-primary transition-colors">
             Athletics
-          </Link>
-          <Link to="/students" className="font-medium hover:text-primary transition-colors">
-            Students
           </Link>
           <Link to="/contact" className="font-medium hover:text-primary transition-colors">
             Contact
@@ -89,22 +86,15 @@ const Header = () => {
               className="flex items-center gap-2 py-2 px-3 hover:bg-gray-50 rounded-md"
               onClick={() => setMobileMenuOpen(false)}
             >
-              <Users className="h-5 w-5" />
+              <Calendar className="h-5 w-5" />
               Athletics
-            </Link>
-            <Link
-              to="/students"
-              className="flex items-center gap-2 py-2 px-3 hover:bg-gray-50 rounded-md"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              <Users className="h-5 w-5" />
-              Students
             </Link>
             <Link
               to="/contact"
               className="flex items-center gap-2 py-2 px-3 hover:bg-gray-50 rounded-md"
               onClick={() => setMobileMenuOpen(false)}
             >
+              <Phone className="h-5 w-5" />
               Contact
             </Link>
             <Button className="w-full">Portal Login</Button>
