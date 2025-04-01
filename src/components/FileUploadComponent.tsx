@@ -177,7 +177,7 @@ const FileUploadComponent = ({ onUploadComplete }: FileUploadProps) => {
           <Button
             type="button"
             variant="secondary"
-            className="w-full bg-white/10 hover:bg-white/20"
+            className="w-full bg-white hover:bg-white/20"
             onClick={() => document.getElementById('file-upload')?.click()}
           >
             <Upload className="h-4 w-4 mr-2" />
@@ -200,7 +200,7 @@ const FileUploadComponent = ({ onUploadComplete }: FileUploadProps) => {
       
       <Button 
         type="submit" 
-        className="w-full" 
+        className="w-full bg-white text-black hover:bg-white/20" 
         disabled={isUploading}
       >
         {isUploading ? 'Uploading...' : 'Upload Book'}
