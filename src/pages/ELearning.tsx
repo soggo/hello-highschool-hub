@@ -8,8 +8,10 @@ import { Input } from "@/components/ui/input";
 import Layout from "@/components/layout/Layout";
 import { supabase, Book } from "@/lib/supabase";
 import { toast } from "sonner";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const fetchBooks = async (): Promise<Book[]> => {
+  console.log('Fetching books from Supabase');
   const { data, error } = await supabase
     .from('books')
     .select('*')
@@ -20,6 +22,7 @@ const fetchBooks = async (): Promise<Book[]> => {
     throw new Error(error.message);
   }
   
+  console.log('Books fetched:', data);
   return data || [];
 };
 
@@ -36,6 +39,10 @@ const ELearning = () => {
       }
     }
   });
+  
+  console.log('Books in component:', books);
+  console.log('Is loading:', isLoading);
+  console.log('Error:', error);
   
   const filteredBooks = books.filter(book => 
     book.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -76,14 +83,35 @@ const ELearning = () => {
           </div>
 
           {isLoading ? (
-            <div className="flex justify-center items-center h-64">
-              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {[1, 2, 3, 4, 5, 6].map((i) => (
+                <Card key={i} className="overflow-hidden">
+                  <CardHeader className="pb-2">
+                    <Skeleton className="h-6 w-3/4 mb-2" />
+                    <Skeleton className="h-4 w-1/3" />
+                  </CardHeader>
+                  <CardContent>
+                    <Skeleton className="h-4 w-full mb-2" />
+                    <Skeleton className="h-4 w-3/4" />
+                  </CardContent>
+                  <CardFooter>
+                    <Skeleton className="h-10 w-full" />
+                  </CardFooter>
+                </Card>
+              ))}
+            </div>
+          ) : error ? (
+            <div className="text-center py-12">
+              <p className="text-red-500 text-lg">Error loading books. Please try again later.</p>
             </div>
           ) : (
             <>
               {filteredBooks.length === 0 ? (
                 <div className="text-center py-12">
                   <p className="text-gray-500 text-lg">No books found matching your search criteria.</p>
+                  {books.length === 0 && (
+                    <p className="text-gray-500 mt-2">There are currently no books in the library.</p>
+                  )}
                 </div>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -101,7 +129,7 @@ const ELearning = () => {
                         </div>
                       </CardHeader>
                       <CardContent>
-                        <p className="text-sm text-gray-500 line-clamp-3">{book.description}</p>
+                        <p className="text-sm text-gray-500 line-clamp-3">{book.description || "No description available."}</p>
                       </CardContent>
                       <CardFooter>
                         <Button className="w-full" onClick={() => handleViewBook(book)}>View Book</Button>
