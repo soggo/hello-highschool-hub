@@ -8,7 +8,7 @@ const Footer = () => {
   return (
     <footer className="bg-gray-900 text-white pt-12 pb-8">
       <div className="container mx-auto px-4">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
           <div>
             <h3 className="font-display text-xl font-semibold mb-4">Evergreen High School</h3>
             <p className="text-gray-300 mb-4">
@@ -52,25 +52,11 @@ const Footer = () => {
             <h3 className="font-display text-lg font-semibold mb-4">Resources</h3>
             <ul className="space-y-2">
               <li>
-                <a href="#" className="text-gray-300 hover:text-white transition-colors">Student Portal</a>
-              </li>
-              <li>
-                <a href="#" className="text-gray-300 hover:text-white transition-colors">Parent Portal</a>
-              </li>
-              <li>
-                <a href="#" className="text-gray-300 hover:text-white transition-colors">Staff Directory</a>
-              </li>
-              <li>
-                <a href="#" className="text-gray-300 hover:text-white transition-colors">Counseling</a>
-              </li>
-              <li>
-                <a href="#" className="text-gray-300 hover:text-white transition-colors">Library</a>
+                <Link to="/elearning" className="text-gray-300 hover:text-white transition-colors">E-Learning</Link>
               </li>
             </ul>
-          </div>
-          
-          <div>
-            <h3 className="font-display text-lg font-semibold mb-4">Contact Us</h3>
+            
+            <h3 className="font-display text-lg font-semibold mt-6 mb-4">Contact Us</h3>
             <address className="not-italic text-gray-300 space-y-2">
               <p>123 Education Ave.</p>
               <p>Evergreen, WA 98123</p>

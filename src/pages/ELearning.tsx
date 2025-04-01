@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Book as BookIcon } from "lucide-react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -20,60 +20,8 @@ const fetchBooks = async (): Promise<Book[]> => {
     throw new Error(error.message);
   }
   
-  // If no data is found, return the mock data for demonstration
-  if (!data || data.length === 0) {
-    console.log('No books found in Supabase, using mock data');
-    return mockBooks as unknown as Book[];
-  }
-  
-  return data;
+  return data || [];
 };
-
-// Mock data for fallback when no books are found in Supabase
-const mockBooks = [
-  {
-    id: 1,
-    title: "Calculus Fundamentals",
-    description: "A comprehensive guide to calculus for high school students.",
-    subject: "Mathematics",
-    grade: "12"
-  },
-  {
-    id: 2,
-    title: "English Literature Classics",
-    description: "Analysis of classic literature works for advanced students.",
-    subject: "English",
-    grade: "11-12"
-  },
-  {
-    id: 3,
-    title: "Biology: The Living World",
-    description: "Exploring the fundamentals of biology and life sciences.",
-    subject: "Science",
-    grade: "10"
-  },
-  {
-    id: 4,
-    title: "World History: Modern Era",
-    description: "A detailed look at world history from the 18th century to present day.",
-    subject: "History",
-    grade: "11"
-  },
-  {
-    id: 5,
-    title: "Chemistry Essentials",
-    description: "Core concepts in chemistry with practical experiments.",
-    subject: "Science",
-    grade: "11"
-  },
-  {
-    id: 6,
-    title: "Computer Science Principles",
-    description: "Introduction to programming and computer science concepts.",
-    subject: "Computer Science",
-    grade: "9-12"
-  }
-];
 
 const ELearning = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -88,12 +36,6 @@ const ELearning = () => {
       }
     }
   });
-  
-  useEffect(() => {
-    if (error) {
-      console.error('Error in books query:', error);
-    }
-  }, [error]);
   
   const filteredBooks = books.filter(book => 
     book.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
