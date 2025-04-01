@@ -96,6 +96,12 @@ const About = () => {
                       <h3 className="font-display text-xl font-bold text-primary mb-3">Innovation</h3>
                       <p className="text-gray-700">We encourage creative thinking, problem-solving, and adaptability in our rapidly changing world.</p>
                     </div>
+
+                    <div className="bg-gray-50 p-6 rounded-lg">
+                      <h3 className="font-display text-xl font-bold text-primary mb-3">Responsibility
+                      </h3>
+                      <p className="text-gray-700">We nurture accountability and a strong work ethic, ensuring students take ownership of their actions and commitments..</p>
+                    </div>
                   </div>
                 </div>
               </TabsContent>
