@@ -133,9 +133,7 @@ const Login = () => {
                       )}
                     </Button>
                     
-                    <div className="text-center text-sm text-gray-500 mt-4">
-                      <p>For demo: use any email ending with @school.edu and password "password"</p>
-                    </div>
+                   
                   </form>
                 </Form>
               </CardContent>
