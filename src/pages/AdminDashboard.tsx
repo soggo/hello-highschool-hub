@@ -241,7 +241,7 @@ const AdminDashboard = () => {
         <Tabs defaultValue="books" className="w-full">
           <TabsList className="mb-6">
             <TabsTrigger value="books">Manage Books</TabsTrigger>
-            <TabsTrigger value="students">User Analytics</TabsTrigger>
+            {/* <TabsTrigger value="students">User Analytics</TabsTrigger> */}
           </TabsList>
           
           <TabsContent value="books">
