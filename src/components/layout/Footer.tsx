@@ -62,7 +62,8 @@ const Footer = () => {
               <p>Lagos</p>
               <p className="flex items-center gap-2 mt-4">
                 <Phone size={16} />
-                (555) 123-4567
+                (+234) 0807 994 7272
+
               </p>
               <p className="flex items-center gap-2">
                 <Mail size={16} />

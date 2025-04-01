@@ -5,27 +5,30 @@ import { Badge } from '@/components/ui/badge';
 
 const announcements = [
   {
-    id: 1,
-    title: "Fall Sports Tryouts",
-    description: "Tryouts for fall sports will begin August 15th. Sign up in the athletics office by August 10th.",
-    date: "August 15, 2023",
-    category: "Athletics",
+    "id": 1,
+    "title": "Easter Break",
+    "description": "School will close for Easter break on March 28th and resume on April 8th. Students are advised to complete their assignments before resumption.",
+    "date": "March 28, 2025",
+    "category": "Holiday"
+  },
+
+  {
+    "id": 2,
+    "title": "Second Term Interhouse Sports",
+    "description": "The second term Interhouse Sports competition will take place on May 20th. All students should participate in their respective houses' training sessions.",
+    "date": "May 20, 2025",
+    "category": "Sports"
   },
   {
-    id: 2,
-    title: "Back to School Night",
-    description: "Join us for Back to School Night on September 2nd from 6:00pm to 8:00pm. Meet your teachers and learn about the curriculum.",
-    date: "September 2, 2023",
-    category: "Events",
+    "id": 3,
+    "title": "Entrance Examination",
+    "description": "The entrance examination for new students will be held on September 14th. Registration closes on September 10th at the school office.",
+    "date": "September 14, 2025",
+    "category": "Admissions"
   },
-  {
-    id: 3,
-    title: "College Application Workshop",
-    description: "Seniors, attend the college application workshop every Tuesday in September in the library after school.",
-    date: "September 5, 2023",
-    category: "College",
-  },
-];
+
+]
+
 
 const Announcements = () => {
   return (
@@ -52,21 +55,19 @@ const Announcements = () => {
               <CardContent>
                 <p>{announcement.description}</p>
               </CardContent>
-              <CardFooter>
-                <a href="#" className="text-primary hover:underline text-sm">Read more</a>
-              </CardFooter>
+            
             </Card>
           ))}
         </div>
         
-        <div className="text-center mt-10">
+        {/* <div className="text-center mt-10">
           <a href="#" className="inline-flex items-center text-primary hover:underline font-medium">
             View all announcements
             <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
             </svg>
           </a>
-        </div>
+        </div> */}
       </div>
     </section>
   );

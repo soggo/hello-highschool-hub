@@ -109,7 +109,7 @@ const About = () => {
                       alt="Proprietor" 
                       className="w-48 h-48 rounded-full object-cover  object-top mx-auto mb-4"
                     />
-                    <h3 className="font-display text-xl font-bold">Dr xxx</h3>
+                    <h3 className="font-display text-xl font-bold">Mr Adebisi Adenaya</h3>
                     <p className="text-primary font-medium">Proprietor</p>
                   </div>
                   {/* <div className="text-center">
