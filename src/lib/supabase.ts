@@ -6,6 +6,13 @@ const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYm
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
+export const isAdmin = async (): Promise<boolean> => {
+  const { data: { session } } = await supabase.auth.getSession();
+  // This is a simplified check - in production, you should validate against a user role
+  // For now, we'll consider any authenticated user an admin
+  return !!session;
+};
+
 export type Book = {
   id: string;
   title: string;

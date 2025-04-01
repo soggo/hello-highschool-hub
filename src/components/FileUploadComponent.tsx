@@ -5,7 +5,7 @@ import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { supabase } from '@/lib/supabase';
+import { supabase, isAdmin } from '@/lib/supabase';
 
 type FileUploadProps = {
   onUploadComplete: () => void;
@@ -48,16 +48,25 @@ const FileUploadComponent = ({ onUploadComplete }: FileUploadProps) => {
     setIsUploading(true);
     
     try {
+      // Check if user is admin before proceeding
+      const adminStatus = await isAdmin();
+      if (!adminStatus) {
+        toast.error('You must be logged in as an admin to upload books');
+        setIsUploading(false);
+        return;
+      }
+      
       // Upload file to Supabase Storage
       const fileExt = file.name.split('.').pop();
       const fileName = `${Math.random().toString(36).substring(2, 15)}_${Date.now()}.${fileExt}`;
-      const filePath = `books/${fileName}`;
+      const filePath = `${fileName}`;
       
       const { data: fileData, error: uploadError } = await supabase.storage
         .from('books')
         .upload(filePath, file);
       
       if (uploadError) {
+        console.error('Storage upload error:', uploadError);
         throw uploadError;
       }
 
@@ -66,19 +75,24 @@ const FileUploadComponent = ({ onUploadComplete }: FileUploadProps) => {
         .from('books')
         .getPublicUrl(filePath);
       
+      console.log('File uploaded successfully:', urlData.publicUrl);
+      
       // Insert record into the books table
-      const { error: dbError } = await supabase.from('books').insert([
-        {
-          title: bookData.title,
-          description: bookData.description,
-          subject: bookData.subject,
-          grade: bookData.grade,
-          fileUrl: urlData.publicUrl,
-          downloads: 0,
-        },
-      ]);
+      const { error: dbError } = await supabase
+        .from('books')
+        .insert([
+          {
+            title: bookData.title,
+            description: bookData.description,
+            subject: bookData.subject,
+            grade: bookData.grade,
+            fileUrl: urlData.publicUrl,
+            downloads: 0,
+          },
+        ]);
 
       if (dbError) {
+        console.error('Database insert error:', dbError);
         throw dbError;
       }
 
