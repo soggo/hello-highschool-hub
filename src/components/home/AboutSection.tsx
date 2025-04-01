@@ -37,7 +37,7 @@ const AboutSection = () => {
           <div className="order-1 md:order-2 flex justify-center">
             <div className="relative">
               <img 
-                src="public/broad.jpeg" 
+                src="broad.jpeg" 
                 alt="Dikor students in Lab" 
                 className="rounded-lg shadow-lg z-10 relative w-fullobject-cover"
               />
