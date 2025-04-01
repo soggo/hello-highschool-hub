@@ -77,7 +77,7 @@ const FileUploadComponent = ({ onUploadComplete }: FileUploadProps) => {
       
       console.log('File uploaded successfully:', urlData.publicUrl);
       
-      // Insert record into the books table
+      // Insert record into the books table with created_at timestamp
       const { error: dbError } = await supabase
         .from('books')
         .insert([
@@ -88,6 +88,7 @@ const FileUploadComponent = ({ onUploadComplete }: FileUploadProps) => {
             grade: bookData.grade,
             fileUrl: urlData.publicUrl,
             downloads: 0,
+            created_at: new Date().toISOString(), // Add timestamp for created_at
           },
         ]);
 
