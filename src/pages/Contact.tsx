@@ -36,8 +36,8 @@ const Contact = () => {
                     </div>
                     <div>
                       <h3 className="font-bold text-lg">Phone</h3>
-                      <p className="text-gray-700">Main Office: (555) 123-4567</p>
-                      <p className="text-gray-700">Attendance: (555) 123-4568</p>
+                      <p className="text-gray-700">Main Office: (+234) 0807 994 7272</p>
+                      
                     </div>
                   </div>
                   
@@ -47,8 +47,8 @@ const Contact = () => {
                     </div>
                     <div>
                       <h3 className="font-bold text-lg">Email</h3>
-                      <p className="text-gray-700">General Inquiries: info@evergreenhigh.edu</p>
-                      <p className="text-gray-700">Admissions: admissions@evergreenhigh.edu</p>
+                      <p className="text-gray-700">General Inquiries: info@DikorComprehensiveCollege.com</p>
+                      
                     </div>
                   </div>
                   
@@ -58,8 +58,8 @@ const Contact = () => {
                     </div>
                     <div>
                       <h3 className="font-bold text-lg">Address</h3>
-                      <p className="text-gray-700">123 Evergreen Avenue</p>
-                      <p className="text-gray-700">Springfield, ST 12345</p>
+                      <p className="text-gray-700"> Apa, Badagry,</p>
+                      <p className="text-gray-700"> Lagos</p>
                     </div>
                   </div>
                   
@@ -152,18 +152,18 @@ const Contact = () => {
         </section>
 
         {/* Map Section */}
-        <section className="bg-gray-100 py-16">
+        {/* <section className="bg-gray-100 py-16">
           <div className="container mx-auto px-4">
             <h2 className="font-display text-3xl font-bold mb-8 text-center">Find Us</h2>
             <div className="aspect-w-16 aspect-h-9 max-w-5xl mx-auto rounded-lg overflow-hidden shadow-lg">
-              {/* Placeholder for map - in a real implementation, use Google Maps or similar */}
+        
               <div className="bg-gray-300 w-full h-[400px] flex items-center justify-center">
                 <MapPin className="h-12 w-12 text-gray-500 mr-3" />
                 <span className="text-xl font-medium text-gray-700">Interactive Map Would Go Here</span>
               </div>
             </div>
           </div>
-        </section>
+        </section> */}
       </main>
       <Footer />
     </div>

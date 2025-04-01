@@ -3,7 +3,7 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import Hero from "@/components/home/Hero";
 import Announcements from "@/components/home/Announcements";
-import QuickLinks from "@/components/home/QuickLinks";
+// import QuickLinks from "@/components/home/QuickLinks";
 import AboutSection from "@/components/home/AboutSection";
 import UpcomingEvents from "@/components/home/UpcomingEvents";
 
@@ -13,7 +13,7 @@ const Index = () => {
       <Header />
       <main className="flex-grow">
         <Hero />
-        <QuickLinks />
+        {/* <QuickLinks /> */}
         <AboutSection />
         <Announcements />
         <UpcomingEvents />
