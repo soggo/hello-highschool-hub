@@ -111,7 +111,7 @@ const About = () => {
                 <div className="grid md:grid-cols gap-6">
                   <div className="text-center">
                     <img 
-                      src="public/props.jpeg" 
+                      src="props.jpeg" 
                       alt="Proprietor" 
                       className="w-48 h-48 rounded-full object-cover  object-top mx-auto mb-4"
                     />
