@@ -25,7 +25,7 @@ const Hero = () => {
         <div className="relative hidden md:block">
           <div className="absolute inset-0 bg-primary/10 rounded-lg -rotate-3"></div>
           <img 
-            src="dikorlab2.jpeg" 
+            src="/dikorlab2.jpeg" 
             alt="Students Dikor"
             className="rounded-lg shadow-lg object-cover w-full h-[1100px] relative z-10 rotate-3"
           />
