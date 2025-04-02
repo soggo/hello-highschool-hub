@@ -16,8 +16,8 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    --primary: 214 89% 52%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 352 87% 41%;
+    --primary-foreground: 0 0% 100%;
 
     --secondary: 210 40% 96.1%;
     --secondary-foreground: 222.2 47.4% 11.2%;
@@ -25,15 +25,15 @@
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
 
-    --accent: 214 89% 90%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 352 87% 96%;
+    --accent-foreground: 352 87% 41%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --ring: 352 87% 41%;
 
     --radius: 0.5rem;
   }
@@ -48,7 +48,7 @@
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
 
-    --primary: 214 89% 52%;
+    --primary: 352 87% 41%;
     --primary-foreground: 0 0% 100%;
 
     --secondary: 217.2 32.6% 17.5%;
@@ -57,7 +57,7 @@
     --muted: 217.2 32.6% 17.5%;
     --muted-foreground: 215 20.2% 65.1%;
 
-    --accent: 214 89% 20%;
+    --accent: 352 60% 20%;
     --accent-foreground: 210 40% 98%;
 
     --destructive: 0 62.8% 30.6%;
@@ -85,7 +85,7 @@
 }
 
 .hero-gradient {
-  background: linear-gradient(to right, rgba(26, 115, 232, 0.1), rgba(66, 133, 244, 0.2));
+  background: linear-gradient(to right, rgba(194, 14, 49, 0.1), rgba(194, 14, 49, 0.2));
 }
 
 .fade-in {

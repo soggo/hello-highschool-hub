@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Book as BookIcon, BookOpen, User, LogOut } from "lucide-react";
+import { Book as BookIcon, BookOpen, User, LogOut, BellRing, PlusCircle } from "lucide-react";
 import { toast } from "sonner";
 import { useQuery } from "@tanstack/react-query";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -17,6 +17,18 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { supabase, Book } from "@/lib/supabase";
 import FileUploadComponent from "@/components/FileUploadComponent";
+import { 
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 // Mock data fallback
 const mockBooks = [
@@ -62,6 +74,16 @@ const mockBooks = [
   },
 ];
 
+// Announcement type
+type Announcement = {
+  id: string;
+  title: string;
+  description: string;
+  date: string;
+  category: string;
+  created_at: string;
+};
+
 const fetchBooksAdmin = async (): Promise<Book[]> => {
   const { data, error } = await supabase
     .from('books')
@@ -82,17 +104,50 @@ const fetchBooksAdmin = async (): Promise<Book[]> => {
   return data;
 };
 
+const fetchAnnouncements = async (): Promise<Announcement[]> => {
+  const { data, error } = await supabase
+    .from('announcements')
+    .select('*')
+    .order('created_at', { ascending: false });
+  
+  if (error) {
+    console.error('Error fetching announcements:', error);
+    throw new Error(error.message);
+  }
+  
+  return data || [];
+};
+
 const AdminDashboard = () => {
   const navigate = useNavigate();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userEmail, setUserEmail] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
+  const [announcementSearchTerm, setAnnouncementSearchTerm] = useState("");
+  
+  // New announcement form state
+  const [newAnnouncement, setNewAnnouncement] = useState({
+    title: "",
+    description: "",
+    date: "",
+    category: "General"
+  });
+  
+  // Edit announcement state
+  const [editingAnnouncement, setEditingAnnouncement] = useState<Announcement | null>(null);
 
   // Fetch books from Supabase
   const { data: books = [], isLoading: isBooksLoading, refetch: refetchBooks } = useQuery({
     queryKey: ["admin-books"],
     queryFn: fetchBooksAdmin,
+    enabled: isAuthenticated,
+  });
+  
+  // Fetch announcements from Supabase
+  const { data: announcements = [], isLoading: isAnnouncementsLoading, refetch: refetchAnnouncements } = useQuery({
+    queryKey: ["admin-announcements"],
+    queryFn: fetchAnnouncements,
     enabled: isAuthenticated,
   });
 
@@ -146,6 +201,12 @@ const AdminDashboard = () => {
     book.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
     book.subject.toLowerCase().includes(searchTerm.toLowerCase())
   );
+  
+  const filteredAnnouncements = announcements.filter(announcement => 
+    announcement.title.toLowerCase().includes(announcementSearchTerm.toLowerCase()) ||
+    announcement.category.toLowerCase().includes(announcementSearchTerm.toLowerCase()) ||
+    announcement.description.toLowerCase().includes(announcementSearchTerm.toLowerCase())
+  );
 
   const handleDeleteBook = async (id: string) => {
     try {
@@ -161,6 +222,81 @@ const AdminDashboard = () => {
     } catch (error) {
       console.error("Error deleting book:", error);
       toast.error("Failed to delete book");
+    }
+  };
+  
+  const handleAddAnnouncement = async () => {
+    try {
+      if (!newAnnouncement.title || !newAnnouncement.description || !newAnnouncement.date) {
+        toast.error("Please fill all required fields");
+        return;
+      }
+      
+      const { error } = await supabase
+        .from('announcements')
+        .insert([{
+          title: newAnnouncement.title,
+          description: newAnnouncement.description,
+          date: newAnnouncement.date,
+          category: newAnnouncement.category,
+          created_at: new Date().toISOString()
+        }]);
+      
+      if (error) throw error;
+      
+      toast.success("Announcement added successfully");
+      setNewAnnouncement({
+        title: "",
+        description: "",
+        date: "",
+        category: "General"
+      });
+      refetchAnnouncements();
+    } catch (error) {
+      console.error("Error adding announcement:", error);
+      toast.error("Failed to add announcement");
+    }
+  };
+  
+  const handleUpdateAnnouncement = async () => {
+    if (!editingAnnouncement) return;
+    
+    try {
+      const { error } = await supabase
+        .from('announcements')
+        .update({
+          title: editingAnnouncement.title,
+          description: editingAnnouncement.description,
+          date: editingAnnouncement.date,
+          category: editingAnnouncement.category
+        })
+        .eq('id', editingAnnouncement.id);
+      
+      if (error) throw error;
+      
+      toast.success("Announcement updated successfully");
+      setEditingAnnouncement(null);
+      refetchAnnouncements();
+    } catch (error) {
+      console.error("Error updating announcement:", error);
+      toast.error("Failed to update announcement");
+    }
+  };
+  
+  const handleDeleteAnnouncement = async (id: string) => {
+    try {
+      const { error } = await supabase
+        .from('announcements')
+        .delete()
+        .eq('id', id);
+      
+      if (error) throw error;
+      
+      toast.success("Announcement deleted successfully");
+      refetchAnnouncements();
+    } catch (error) {
+      console.error("Error deleting announcement:", error);
+      toast.error("Failed to delete announcement");
     }
   };
 
@@ -217,15 +353,13 @@ const AdminDashboard = () => {
           
           <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-lg font-medium">Total Downloads</CardTitle>
-              <CardDescription>Past 30 days</CardDescription>
+              <CardTitle className="text-lg font-medium">Announcements</CardTitle>
+              <CardDescription>School updates</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="flex items-center">
-                <BookOpen className="h-8 w-8 text-primary mr-4" />
-                <span className="text-3xl font-bold">
-                  {books.reduce((sum, book) => sum + (book.downloads || 0), 0)}
-                </span>
+                <BellRing className="h-8 w-8 text-primary mr-4" />
+                <span className="text-3xl font-bold">{announcements.length}</span>
               </div>
             </CardContent>
           </Card>
@@ -241,7 +375,7 @@ const AdminDashboard = () => {
         <Tabs defaultValue="books" className="w-full">
           <TabsList className="mb-6">
             <TabsTrigger value="books">Manage Books</TabsTrigger>
-            {/* <TabsTrigger value="students">User Analytics</TabsTrigger> */}
+            <TabsTrigger value="announcements">Manage Announcements</TabsTrigger>
           </TabsList>
           
           <TabsContent value="books">
@@ -306,22 +440,229 @@ const AdminDashboard = () => {
             </Card>
           </TabsContent>
           
-          <TabsContent value="students">
+          <TabsContent value="announcements">
             <Card>
               <CardHeader>
-                <CardTitle>User Analytics</CardTitle>
-                <CardDescription>
-                  Monitor user engagement and download statistics
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="flex justify-center items-center py-12 text-center text-gray-500">
-                  <div>
-                    <BookOpen className="h-16 w-16 mx-auto mb-4 text-gray-300" />
-                    <p className="text-lg mb-2">Analytics Dashboard Coming Soon</p>
-                    <p>This feature will be available in future updates</p>
+                <div className="flex items-center justify-between">
+                  <CardTitle>Manage Announcements</CardTitle>
+                  <div className="flex gap-4">
+                    <div className="w-64">
+                      <Input 
+                        type="text" 
+                        placeholder="Search announcements..." 
+                        value={announcementSearchTerm}
+                        onChange={(e) => setAnnouncementSearchTerm(e.target.value)}
+                      />
+                    </div>
+                    
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button>
+                          <PlusCircle className="h-4 w-4 mr-2" />
+                          Add Announcement
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent>
+                        <DialogHeader>
+                          <DialogTitle>Add New Announcement</DialogTitle>
+                          <DialogDescription>
+                            Create a new announcement to be displayed on the school website.
+                          </DialogDescription>
+                        </DialogHeader>
+                        
+                        <div className="grid gap-4 py-4">
+                          <div className="grid gap-2">
+                            <Label htmlFor="title">Title</Label>
+                            <Input
+                              id="title"
+                              placeholder="Enter announcement title"
+                              value={newAnnouncement.title}
+                              onChange={(e) => setNewAnnouncement({...newAnnouncement, title: e.target.value})}
+                            />
+                          </div>
+                          
+                          <div className="grid gap-2">
+                            <Label htmlFor="date">Date</Label>
+                            <Input
+                              id="date"
+                              placeholder="e.g., March 28, 2025"
+                              value={newAnnouncement.date}
+                              onChange={(e) => setNewAnnouncement({...newAnnouncement, date: e.target.value})}
+                            />
+                          </div>
+                          
+                          <div className="grid gap-2">
+                            <Label htmlFor="category">Category</Label>
+                            <Select
+                              value={newAnnouncement.category}
+                              onValueChange={(value) => setNewAnnouncement({...newAnnouncement, category: value})}
+                            >
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select a category" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="General">General</SelectItem>
+                                <SelectItem value="Academic">Academic</SelectItem>
+                                <SelectItem value="Sports">Sports</SelectItem>
+                                <SelectItem value="Holiday">Holiday</SelectItem>
+                                <SelectItem value="Admissions">Admissions</SelectItem>
+                                <SelectItem value="Event">Event</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          
+                          <div className="grid gap-2">
+                            <Label htmlFor="description">Description</Label>
+                            <Textarea
+                              id="description"
+                              placeholder="Enter announcement details"
+                              rows={4}
+                              value={newAnnouncement.description}
+                              onChange={(e) => setNewAnnouncement({...newAnnouncement, description: e.target.value})}
+                            />
+                          </div>
+                        </div>
+                        
+                        <DialogFooter>
+                          <Button onClick={handleAddAnnouncement}>
+                            Add Announcement
+                          </Button>
+                        </DialogFooter>
+                      </DialogContent>
+                    </Dialog>
                   </div>
                 </div>
+              </CardHeader>
+              <CardContent>
+                {isAnnouncementsLoading ? (
+                  <div className="flex justify-center py-10">
+                    <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
+                  </div>
+                ) : (
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Title</TableHead>
+                        <TableHead>Date</TableHead>
+                        <TableHead>Category</TableHead>
+                        <TableHead>Created</TableHead>
+                        <TableHead>Actions</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {filteredAnnouncements.map((announcement) => (
+                        <TableRow key={announcement.id}>
+                          <TableCell className="font-medium">{announcement.title}</TableCell>
+                          <TableCell>{announcement.date}</TableCell>
+                          <TableCell>{announcement.category}</TableCell>
+                          <TableCell>{new Date(announcement.created_at).toLocaleDateString()}</TableCell>
+                          <TableCell>
+                            <div className="flex space-x-2">
+                              <Dialog>
+                                <DialogTrigger asChild>
+                                  <Button 
+                                    size="sm" 
+                                    variant="outline"
+                                    onClick={() => setEditingAnnouncement(announcement)}
+                                  >
+                                    Edit
+                                  </Button>
+                                </DialogTrigger>
+                                <DialogContent>
+                                  <DialogHeader>
+                                    <DialogTitle>Edit Announcement</DialogTitle>
+                                    <DialogDescription>
+                                      Make changes to the announcement.
+                                    </DialogDescription>
+                                  </DialogHeader>
+                                  
+                                  {editingAnnouncement && (
+                                    <div className="grid gap-4 py-4">
+                                      <div className="grid gap-2">
+                                        <Label htmlFor="edit-title">Title</Label>
+                                        <Input
+                                          id="edit-title"
+                                          value={editingAnnouncement.title}
+                                          onChange={(e) => setEditingAnnouncement({
+                                            ...editingAnnouncement,
+                                            title: e.target.value
+                                          })}
+                                        />
+                                      </div>
+                                      
+                                      <div className="grid gap-2">
+                                        <Label htmlFor="edit-date">Date</Label>
+                                        <Input
+                                          id="edit-date"
+                                          value={editingAnnouncement.date}
+                                          onChange={(e) => setEditingAnnouncement({
+                                            ...editingAnnouncement,
+                                            date: e.target.value
+                                          })}
+                                        />
+                                      </div>
+                                      
+                                      <div className="grid gap-2">
+                                        <Label htmlFor="edit-category">Category</Label>
+                                        <Select
+                                          value={editingAnnouncement.category}
+                                          onValueChange={(value) => setEditingAnnouncement({
+                                            ...editingAnnouncement,
+                                            category: value
+                                          })}
+                                        >
+                                          <SelectTrigger>
+                                            <SelectValue placeholder="Select a category" />
+                                          </SelectTrigger>
+                                          <SelectContent>
+                                            <SelectItem value="General">General</SelectItem>
+                                            <SelectItem value="Academic">Academic</SelectItem>
+                                            <SelectItem value="Sports">Sports</SelectItem>
+                                            <SelectItem value="Holiday">Holiday</SelectItem>
+                                            <SelectItem value="Admissions">Admissions</SelectItem>
+                                            <SelectItem value="Event">Event</SelectItem>
+                                          </SelectContent>
+                                        </Select>
+                                      </div>
+                                      
+                                      <div className="grid gap-2">
+                                        <Label htmlFor="edit-description">Description</Label>
+                                        <Textarea
+                                          id="edit-description"
+                                          rows={4}
+                                          value={editingAnnouncement.description}
+                                          onChange={(e) => setEditingAnnouncement({
+                                            ...editingAnnouncement,
+                                            description: e.target.value
+                                          })}
+                                        />
+                                      </div>
+                                    </div>
+                                  )}
+                                  
+                                  <DialogFooter>
+                                    <Button onClick={handleUpdateAnnouncement}>
+                                      Save Changes
+                                    </Button>
+                                  </DialogFooter>
+                                </DialogContent>
+                              </Dialog>
+                              
+                              <Button 
+                                size="sm" 
+                                variant="outline" 
+                                className="text-red-500"
+                                onClick={() => handleDeleteAnnouncement(announcement.id)}
+                              >
+                                Delete
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                )}
               </CardContent>
             </Card>
           </TabsContent>

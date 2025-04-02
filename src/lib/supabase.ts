@@ -23,3 +23,12 @@ export type Book = {
   downloads: number;
   fileUrl?: string;
 };
+
+export type Announcement = {
+  id: string;
+  title: string;
+  description: string;
+  date: string;
+  category: string;
+  created_at: string;
+};
