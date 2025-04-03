@@ -13,19 +13,19 @@ const AboutSection = () => {
             At DIKOR COMPREHENSIVE COLLEGE, our unwavering focus is on providing all students with a rigorous academic foundation combined with an unyielding commitment to discipline. 
             </p>
             <div className="grid grid-cols-2 gap-4 mb-8">
-              <div className="bg-gray-50 p-4 rounded-lg">
+              <div className="bg-primary/5 p-4 rounded-lg">
                 <h4 className="font-display text-2xl font-bold text-primary mb-1">100%</h4>
                 <p className="text-gray-600">Graduation Rate</p>
               </div>
-              <div className="bg-gray-50 p-4 rounded-lg">
+              <div className="bg-primary/5 p-4 rounded-lg">
                 <h4 className="font-display text-2xl font-bold text-primary mb-1">Balanced</h4>
                 <p className="text-gray-600">Student-Teacher Ratio</p>
               </div>
-              <div className="bg-gray-50 p-4 rounded-lg">
+              <div className="bg-primary/5 p-4 rounded-lg">
                 <h4 className="font-display text-2xl font-bold text-primary mb-1">10+</h4>
                 <p className="text-gray-600">Subjects</p>
               </div>
-              <div className="bg-gray-50 p-4 rounded-lg">
+              <div className="bg-primary/5 p-4 rounded-lg">
                 <h4 className="font-display text-2xl font-bold text-primary mb-1">5+</h4>
                 <p className="text-gray-600">Extra Curicular Activities</p>
               </div>
