@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Book as BookIcon } from "lucide-react";
@@ -5,15 +6,24 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Layout from "@/components/layout/Layout";
-import { Book, getLocalBooks, incrementBookDownloads } from "@/lib/supabase";
+import { supabase, Book } from "@/lib/supabase";
 import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";
 
 const fetchBooks = async (): Promise<Book[]> => {
-  console.log('Fetching books from localStorage');
-  // Simulate network delay for a more realistic experience
-  await new Promise(resolve => setTimeout(resolve, 500));
-  return getLocalBooks();
+  console.log('Fetching books from Supabase');
+  const { data, error } = await supabase
+    .from('books')
+    .select('*')
+    .order('created_at', { ascending: false });
+  
+  if (error) {
+    console.error('Error fetching books:', error);
+    throw new Error(error.message);
+  }
+  
+  console.log('Books fetched:', data);
+  return data || [];
 };
 
 const ELearning = () => {
@@ -42,8 +52,6 @@ const ELearning = () => {
 
   const handleViewBook = (book: Book) => {
     if (book.fileUrl) {
-      // Increment download count before opening
-      incrementBookDownloads(book.id);
       window.open(book.fileUrl, '_blank');
     } else {
       toast.info('This book is not available for viewing yet.');

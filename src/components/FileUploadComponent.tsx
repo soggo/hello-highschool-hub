@@ -5,7 +5,7 @@ import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { addLocalBook, getLocalAuthStatus } from '@/lib/supabase';
+import { supabase, isAdmin } from '@/lib/supabase';
 
 type FileUploadProps = {
   onUploadComplete: () => void;
@@ -48,25 +48,54 @@ const FileUploadComponent = ({ onUploadComplete }: FileUploadProps) => {
     setIsUploading(true);
     
     try {
-      // Check if user is authenticated before proceeding
-      const { isAuthenticated } = getLocalAuthStatus();
-      if (!isAuthenticated) {
+      // Check if user is admin before proceeding
+      const adminStatus = await isAdmin();
+      if (!adminStatus) {
         toast.error('You must be logged in as an admin to upload books');
         setIsUploading(false);
         return;
       }
       
-      // Create a mock file URL (in a real app, we would upload to a server)
-      const mockFileUrl = `https://example.com/books/${encodeURIComponent(bookData.title)}.pdf`;
+      // Upload file to Supabase Storage
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Math.random().toString(36).substring(2, 15)}_${Date.now()}.${fileExt}`;
+      const filePath = `${fileName}`;
       
-      // Add book to local storage
-      addLocalBook({
-        title: bookData.title,
-        description: bookData.description,
-        subject: bookData.subject,
-        grade: bookData.grade,
-        fileUrl: mockFileUrl,
-      });
+      const { data: fileData, error: uploadError } = await supabase.storage
+        .from('books')
+        .upload(filePath, file);
+      
+      if (uploadError) {
+        console.error('Storage upload error:', uploadError);
+        throw uploadError;
+      }
+
+      // Get public URL for the uploaded file
+      const { data: urlData } = supabase.storage
+        .from('books')
+        .getPublicUrl(filePath);
+      
+      console.log('File uploaded successfully:', urlData.publicUrl);
+      
+      // Insert record into the books table with created_at timestamp
+      const { error: dbError } = await supabase
+        .from('books')
+        .insert([
+          {
+            title: bookData.title,
+            description: bookData.description,
+            subject: bookData.subject,
+            grade: bookData.grade,
+            fileUrl: urlData.publicUrl,
+            downloads: 0,
+            created_at: new Date().toISOString(), // Add timestamp for created_at
+          },
+        ]);
+
+      if (dbError) {
+        console.error('Database insert error:', dbError);
+        throw dbError;
+      }
 
       toast.success('Book uploaded successfully!');
       
