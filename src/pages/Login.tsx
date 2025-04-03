@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -18,7 +17,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { supabase } from "@/lib/supabase";
+import { supabase, loginLocalUser } from "@/lib/supabase";
 
 // Form validation schema
 const formSchema = z.object({
@@ -48,21 +47,19 @@ const Login = () => {
       });
 
       if (error) {
-        // If Supabase isn't set up or error occurs, try mock login
-        if (values.email.endsWith("@school.edu") && values.password === "password") {
-          // Store user info in localStorage for mock login
-          localStorage.setItem("isAuthenticated", "true");
-          localStorage.setItem("userEmail", values.email);
-          toast.success("Login successful! (Mock login)");
+        // If Supabase isn't set up or error occurs, try local login
+        const localLoginSuccess = loginLocalUser(values.email, values.password);
+        
+        if (localLoginSuccess) {
+          toast.success("Login successful!");
           navigate("/admin");
           return;
         }
+        
         throw error;
       }
 
       // Supabase login successful
-      localStorage.setItem("isAuthenticated", "true");
-      localStorage.setItem("userEmail", values.email);
       toast.success("Login successful!");
       navigate("/admin");
     } catch (error) {
@@ -132,8 +129,6 @@ const Login = () => {
                         </span>
                       )}
                     </Button>
-                    
-                   
                   </form>
                 </Form>
               </CardContent>

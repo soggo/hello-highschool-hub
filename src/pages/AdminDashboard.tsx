@@ -15,7 +15,17 @@ import {
 } from "@/components/ui/table";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { supabase, Book } from "@/lib/supabase";
+import { 
+  supabase, 
+  Book, 
+  Announcement, 
+  getLocalAnnouncements, 
+  addLocalAnnouncement, 
+  updateLocalAnnouncement, 
+  deleteLocalAnnouncement,
+  getLocalAuthStatus,
+  logoutLocalUser
+} from "@/lib/supabase";
 import FileUploadComponent from "@/components/FileUploadComponent";
 import { 
   Dialog,
@@ -33,56 +43,46 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 // Mock data fallback
 const mockBooks = [
   {
-    id: 1,
+    id: "1",
     title: "Calculus Fundamentals",
     subject: "Mathematics",
     grade: "12",
-    uploadedAt: "2023-10-15",
+    created_at: "2023-10-15T00:00:00Z",
     downloads: 145
   },
   {
-    id: 2,
+    id: "2",
     title: "English Literature Classics",
     subject: "English",
     grade: "11-12",
-    uploadedAt: "2023-09-22",
+    created_at: "2023-09-22T00:00:00Z",
     downloads: 97
   },
   {
-    id: 3,
+    id: "3",
     title: "Biology: The Living World",
     subject: "Science",
     grade: "10",
-    uploadedAt: "2023-11-05",
+    created_at: "2023-11-05T00:00:00Z",
     downloads: 208
   },
   {
-    id: 4,
+    id: "4",
     title: "World History: Modern Era",
     subject: "History",
     grade: "11",
-    uploadedAt: "2024-01-12",
+    created_at: "2024-01-12T00:00:00Z",
     downloads: 76
   },
   {
-    id: 5,
+    id: "5",
     title: "Chemistry Essentials",
     subject: "Science",
     grade: "11",
-    uploadedAt: "2024-02-03",
+    created_at: "2024-02-03T00:00:00Z",
     downloads: 119
   },
 ];
-
-// Announcement type
-type Announcement = {
-  id: string;
-  title: string;
-  description: string;
-  date: string;
-  category: string;
-  created_at: string;
-};
 
 const fetchBooksAdmin = async (): Promise<Book[]> => {
   const { data, error } = await supabase
@@ -105,17 +105,8 @@ const fetchBooksAdmin = async (): Promise<Book[]> => {
 };
 
 const fetchAnnouncements = async (): Promise<Announcement[]> => {
-  const { data, error } = await supabase
-    .from('announcements')
-    .select('*')
-    .order('created_at', { ascending: false });
-  
-  if (error) {
-    console.error('Error fetching announcements:', error);
-    throw new Error(error.message);
-  }
-  
-  return data || [];
+  // Using local storage instead of Supabase
+  return getLocalAnnouncements();
 };
 
 const AdminDashboard = () => {
@@ -144,7 +135,7 @@ const AdminDashboard = () => {
     enabled: isAuthenticated,
   });
   
-  // Fetch announcements from Supabase
+  // Fetch announcements from local storage
   const { data: announcements = [], isLoading: isAnnouncementsLoading, refetch: refetchAnnouncements } = useQuery({
     queryKey: ["admin-announcements"],
     queryFn: fetchAnnouncements,
@@ -152,28 +143,27 @@ const AdminDashboard = () => {
   });
 
   useEffect(() => {
-    // Check authentication status
+    // Check authentication status using local storage
     const checkAuth = async () => {
-      // Try to get the session from Supabase
-      const { data: { session } } = await supabase.auth.getSession();
+      const { isAuthenticated: authStatus, email } = getLocalAuthStatus();
       
-      if (session) {
-        setIsAuthenticated(true);
-        setUserEmail(session.user.email || "");
-        setIsLoading(false);
-        return;
+      // Check Supabase as a fallback
+      if (!authStatus) {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session) {
+          setIsAuthenticated(true);
+          setUserEmail(session.user.email || "");
+          setIsLoading(false);
+          return;
+        }
       }
       
-      // Fallback to local storage auth (for mock login)
-      const authStatus = localStorage.getItem("isAuthenticated");
-      const email = localStorage.getItem("userEmail");
-      
-      setIsAuthenticated(authStatus === "true");
+      setIsAuthenticated(authStatus);
       setUserEmail(email || "");
       setIsLoading(false);
       
       // Redirect if not authenticated
-      if (authStatus !== "true" && !session) {
+      if (!authStatus) {
         toast.error("Please log in to access the admin dashboard");
         navigate("/login");
       }
@@ -190,9 +180,8 @@ const AdminDashboard = () => {
       console.error("Supabase logout error:", error);
     }
     
-    // Clear local storage regardless
-    localStorage.removeItem("isAuthenticated");
-    localStorage.removeItem("userEmail");
+    // Clear local storage
+    logoutLocalUser();
     toast.success("Logged out successfully");
     navigate("/login");
   };
@@ -232,17 +221,13 @@ const AdminDashboard = () => {
         return;
       }
       
-      const { error } = await supabase
-        .from('announcements')
-        .insert([{
-          title: newAnnouncement.title,
-          description: newAnnouncement.description,
-          date: newAnnouncement.date,
-          category: newAnnouncement.category,
-          created_at: new Date().toISOString()
-        }]);
-      
-      if (error) throw error;
+      // Add announcement to local storage
+      addLocalAnnouncement({
+        title: newAnnouncement.title,
+        description: newAnnouncement.description,
+        date: newAnnouncement.date,
+        category: newAnnouncement.category
+      });
       
       toast.success("Announcement added successfully");
       setNewAnnouncement({
@@ -262,17 +247,8 @@ const AdminDashboard = () => {
     if (!editingAnnouncement) return;
     
     try {
-      const { error } = await supabase
-        .from('announcements')
-        .update({
-          title: editingAnnouncement.title,
-          description: editingAnnouncement.description,
-          date: editingAnnouncement.date,
-          category: editingAnnouncement.category
-        })
-        .eq('id', editingAnnouncement.id);
-      
-      if (error) throw error;
+      // Update announcement in local storage
+      updateLocalAnnouncement(editingAnnouncement);
       
       toast.success("Announcement updated successfully");
       setEditingAnnouncement(null);
@@ -285,12 +261,8 @@ const AdminDashboard = () => {
   
   const handleDeleteAnnouncement = async (id: string) => {
     try {
-      const { error } = await supabase
-        .from('announcements')
-        .delete()
-        .eq('id', id);
-      
-      if (error) throw error;
+      // Delete announcement from local storage
+      deleteLocalAnnouncement(id);
       
       toast.success("Announcement deleted successfully");
       refetchAnnouncements();
