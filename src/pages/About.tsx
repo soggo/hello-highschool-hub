@@ -1,7 +1,7 @@
+
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Button } from "@/components/ui/button";
 import { useEffect, useRef, useState } from "react";
 
 const About = () => {
@@ -31,7 +31,7 @@ const About = () => {
       <Header />
       <main className="flex-grow">
         {/* Hero Section */}
-        <section ref={heroSectionRef} className="bg-primary/10 py-16">
+        <section ref={heroSectionRef} className="bg-[#c20e31]/10 py-16">
           <div className="container mx-auto px-4">
             <div className="max-w-3xl mx-auto text-center">
               <h1 className="font-display text-4xl md:text-5xl font-bold mb-6">ABOUT <br /> DIKOR COMPREHENSIVE COLLEGE</h1>
