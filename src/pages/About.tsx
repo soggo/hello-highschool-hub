@@ -46,7 +46,7 @@ const About = () => {
         <section className="py-12 relative">
           <div 
             ref={tabsRef} 
-            className={`${isSticky ? 'fixed top-0 left-0 right-0 bg-white shadow-md py-4 z-40' : ''} transition-all duration-200`}
+            className={`${isSticky ? 'fixed top-20 left-0 right-0 bg-white shadow-sm py-4 z-20' : ''} transition-all duration-100`}
           >
             <div className="container mx-auto px-4">
               <Tabs 
@@ -107,15 +107,18 @@ const About = () => {
               
               <TabsContent value="mission" className="space-y-6">
                 <div>
+
+                <h2 className="font-display text-3xl font-bold mb-4">Our Vision</h2>
+                <p className="text-gray-700 mb-8">
+                  To build First Class Citizens that will be Internationally recognized.
+                </p>
+
+                  
                   <h2 className="font-display text-3xl font-bold mb-4">Our Mission</h2>
                   <p className="text-gray-700 mb-8">
                     To cultivate a diverse learning community where students develop the knowledge, skills, and character needed to succeed in an ever-changing world. We are committed to academic excellence, personal growth, and civic responsibility.
                   </p>
 
-                  <h2 className="font-display text-3xl font-bold mb-4">Our Vision</h2>
-                  <p className="text-gray-700 mb-8">
-                  To build First Class Citizens that will be Internationally recognized.
-                  </p>
                   
                   <h2 className="font-display text-3xl font-bold mb-4">Our Core Values</h2>
                   <div className="grid md:grid-cols-2 gap-6">
