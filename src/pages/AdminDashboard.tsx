@@ -16,7 +16,6 @@ import {
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { 
-  supabase, 
   Book, 
   Announcement, 
   getLocalAnnouncements, 
@@ -24,7 +23,9 @@ import {
   updateLocalAnnouncement, 
   deleteLocalAnnouncement,
   getLocalAuthStatus,
-  logoutLocalUser
+  logoutLocalUser,
+  getLocalBooks,
+  deleteLocalBook
 } from "@/lib/supabase";
 import FileUploadComponent from "@/components/FileUploadComponent";
 import { 
@@ -40,68 +41,10 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
-// Mock data fallback
-const mockBooks = [
-  {
-    id: "1",
-    title: "Calculus Fundamentals",
-    subject: "Mathematics",
-    grade: "12",
-    created_at: "2023-10-15T00:00:00Z",
-    downloads: 145
-  },
-  {
-    id: "2",
-    title: "English Literature Classics",
-    subject: "English",
-    grade: "11-12",
-    created_at: "2023-09-22T00:00:00Z",
-    downloads: 97
-  },
-  {
-    id: "3",
-    title: "Biology: The Living World",
-    subject: "Science",
-    grade: "10",
-    created_at: "2023-11-05T00:00:00Z",
-    downloads: 208
-  },
-  {
-    id: "4",
-    title: "World History: Modern Era",
-    subject: "History",
-    grade: "11",
-    created_at: "2024-01-12T00:00:00Z",
-    downloads: 76
-  },
-  {
-    id: "5",
-    title: "Chemistry Essentials",
-    subject: "Science",
-    grade: "11",
-    created_at: "2024-02-03T00:00:00Z",
-    downloads: 119
-  },
-];
-
 const fetchBooksAdmin = async (): Promise<Book[]> => {
-  const { data, error } = await supabase
-    .from('books')
-    .select('*')
-    .order('created_at', { ascending: false });
-  
-  if (error) {
-    console.error('Error fetching books for admin:', error);
-    throw new Error(error.message);
-  }
-  
-  // If no data is found, return the mock data for demonstration
-  if (!data || data.length === 0) {
-    console.log('No books found in Supabase for admin, using mock data');
-    return mockBooks as unknown as Book[];
-  }
-  
-  return data;
+  // Simulate network delay for a more realistic experience
+  await new Promise(resolve => setTimeout(resolve, 500));
+  return getLocalBooks();
 };
 
 const fetchAnnouncements = async (): Promise<Announcement[]> => {
@@ -128,7 +71,7 @@ const AdminDashboard = () => {
   // Edit announcement state
   const [editingAnnouncement, setEditingAnnouncement] = useState<Announcement | null>(null);
 
-  // Fetch books from Supabase
+  // Fetch books from local storage
   const { data: books = [], isLoading: isBooksLoading, refetch: refetchBooks } = useQuery({
     queryKey: ["admin-books"],
     queryFn: fetchBooksAdmin,
@@ -144,19 +87,8 @@ const AdminDashboard = () => {
 
   useEffect(() => {
     // Check authentication status using local storage
-    const checkAuth = async () => {
+    const checkAuth = () => {
       const { isAuthenticated: authStatus, email } = getLocalAuthStatus();
-      
-      // Check Supabase as a fallback
-      if (!authStatus) {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (session) {
-          setIsAuthenticated(true);
-          setUserEmail(session.user.email || "");
-          setIsLoading(false);
-          return;
-        }
-      }
       
       setIsAuthenticated(authStatus);
       setUserEmail(email || "");
@@ -172,14 +104,7 @@ const AdminDashboard = () => {
     checkAuth();
   }, [navigate]);
 
-  const handleLogout = async () => {
-    try {
-      // Try to sign out from Supabase
-      await supabase.auth.signOut();
-    } catch (error) {
-      console.error("Supabase logout error:", error);
-    }
-    
+  const handleLogout = () => {
     // Clear local storage
     logoutLocalUser();
     toast.success("Logged out successfully");
@@ -197,14 +122,10 @@ const AdminDashboard = () => {
     announcement.description.toLowerCase().includes(announcementSearchTerm.toLowerCase())
   );
 
-  const handleDeleteBook = async (id: string) => {
+  const handleDeleteBook = (id: string) => {
     try {
-      const { error } = await supabase
-        .from('books')
-        .delete()
-        .eq('id', id);
-      
-      if (error) throw error;
+      // Delete book from local storage
+      deleteLocalBook(id);
       
       toast.success("Book deleted successfully");
       refetchBooks();
@@ -214,7 +135,7 @@ const AdminDashboard = () => {
     }
   };
   
-  const handleAddAnnouncement = async () => {
+  const handleAddAnnouncement = () => {
     try {
       if (!newAnnouncement.title || !newAnnouncement.description || !newAnnouncement.date) {
         toast.error("Please fill all required fields");
@@ -243,7 +164,7 @@ const AdminDashboard = () => {
     }
   };
   
-  const handleUpdateAnnouncement = async () => {
+  const handleUpdateAnnouncement = () => {
     if (!editingAnnouncement) return;
     
     try {
@@ -259,7 +180,7 @@ const AdminDashboard = () => {
     }
   };
   
-  const handleDeleteAnnouncement = async (id: string) => {
+  const handleDeleteAnnouncement = (id: string) => {
     try {
       // Delete announcement from local storage
       deleteLocalAnnouncement(id);

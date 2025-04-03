@@ -36,6 +36,7 @@ export type Announcement = {
 // Local storage keys
 export const STORAGE_KEYS = {
   ANNOUNCEMENTS: 'dikor_announcements',
+  BOOKS: 'dikor_books',
   AUTH: 'dikor_auth'
 };
 
@@ -117,6 +118,119 @@ export const deleteLocalAnnouncement = (id: string): void => {
   const announcements = getLocalAnnouncements();
   const updatedAnnouncements = announcements.filter(a => a.id !== id);
   saveLocalAnnouncements(updatedAnnouncements);
+};
+
+// Books local storage functions
+export const getLocalBooks = (): Book[] => {
+  const storedBooks = localStorage.getItem(STORAGE_KEYS.BOOKS);
+  if (storedBooks) {
+    return JSON.parse(storedBooks);
+  }
+  
+  // Fallback data in case localStorage is empty
+  const fallbackBooks = [
+    {
+      "id": "1",
+      "title": "Calculus Fundamentals",
+      "description": "A comprehensive guide to basic and advanced calculus concepts for senior secondary students.",
+      "subject": "Mathematics",
+      "grade": "12",
+      "created_at": new Date("2023-10-15").toISOString(),
+      "downloads": 145,
+      "fileUrl": "https://example.com/calculus-textbook.pdf"
+    },
+    {
+      "id": "2",
+      "title": "English Literature Classics",
+      "description": "A collection of classic literature works with analysis and study guides.",
+      "subject": "English",
+      "grade": "11-12",
+      "created_at": new Date("2023-09-22").toISOString(),
+      "downloads": 97,
+      "fileUrl": "https://example.com/english-literature.pdf"
+    },
+    {
+      "id": "3",
+      "title": "Biology: The Living World",
+      "description": "Explore the fascinating world of biology with detailed illustrations and examples.",
+      "subject": "Science",
+      "grade": "10",
+      "created_at": new Date("2023-11-05").toISOString(),
+      "downloads": 208,
+      "fileUrl": "https://example.com/biology-textbook.pdf"
+    },
+    {
+      "id": "4",
+      "title": "World History: Modern Era",
+      "description": "A detailed examination of world history from the 19th century to present day.",
+      "subject": "History",
+      "grade": "11",
+      "created_at": new Date("2024-01-12").toISOString(),
+      "downloads": 76,
+      "fileUrl": "https://example.com/world-history.pdf"
+    },
+    {
+      "id": "5",
+      "title": "Chemistry Essentials",
+      "description": "Core chemistry concepts and experiments for senior secondary students.",
+      "subject": "Science",
+      "grade": "11",
+      "created_at": new Date("2024-02-03").toISOString(),
+      "downloads": 119,
+      "fileUrl": "https://example.com/chemistry-textbook.pdf"
+    },
+  ];
+  
+  // Initialize localStorage with fallback data
+  localStorage.setItem(STORAGE_KEYS.BOOKS, JSON.stringify(fallbackBooks));
+  
+  return fallbackBooks;
+};
+
+export const saveLocalBooks = (books: Book[]): void => {
+  localStorage.setItem(STORAGE_KEYS.BOOKS, JSON.stringify(books));
+};
+
+export const addLocalBook = (book: Omit<Book, 'id' | 'created_at' | 'downloads'>): Book => {
+  const books = getLocalBooks();
+  
+  const newBook: Book = {
+    ...book,
+    id: Date.now().toString(),
+    created_at: new Date().toISOString(),
+    downloads: 0
+  };
+  
+  books.push(newBook);
+  saveLocalBooks(books);
+  
+  return newBook;
+};
+
+export const updateLocalBook = (book: Book): void => {
+  const books = getLocalBooks();
+  const index = books.findIndex(b => b.id === book.id);
+  
+  if (index !== -1) {
+    books[index] = book;
+    saveLocalBooks(books);
+  }
+};
+
+export const deleteLocalBook = (id: string): void => {
+  const books = getLocalBooks();
+  const updatedBooks = books.filter(b => b.id !== id);
+  saveLocalBooks(updatedBooks);
+};
+
+export const incrementBookDownloads = (id: string): void => {
+  const books = getLocalBooks();
+  const index = books.findIndex(b => b.id === id);
+  
+  if (index !== -1) {
+    books[index].downloads += 1;
+    saveLocalBooks(books);
+  }
 };
 
 // Auth functions using local storage instead of Supabase
