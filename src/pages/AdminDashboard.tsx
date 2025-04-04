@@ -1,6 +1,7 @@
+
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Book as BookIcon, User, LogOut, BellRing, Calendar, PlusCircle } from "lucide-react";
+import { Book as BookIcon, User, LogOut, BellRing } from "lucide-react";
 import { toast } from "sonner";
 import { useQuery } from "@tanstack/react-query";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -24,13 +25,8 @@ import {
   updateLocalAnnouncement, 
   deleteLocalAnnouncement,
   getLocalAuthStatus,
-  logoutLocalUser,
-  getLocalEvents,
-  addLocalEvent,
-  updateLocalEvent,
-  deleteLocalEvent
+  logoutLocalUser
 } from "@/lib/supabase";
-import { Event } from "@/components/home/UpcomingEvents";
 import FileUploadComponent from "@/components/FileUploadComponent";
 import { 
   Dialog,
@@ -114,11 +110,6 @@ const fetchAnnouncements = async (): Promise<Announcement[]> => {
   return getLocalAnnouncements();
 };
 
-const fetchEvents = async (): Promise<Event[]> => {
-  // Using local storage
-  return getLocalEvents();
-};
-
 const AdminDashboard = () => {
   const navigate = useNavigate();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -126,7 +117,6 @@ const AdminDashboard = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [announcementSearchTerm, setAnnouncementSearchTerm] = useState("");
-  const [eventSearchTerm, setEventSearchTerm] = useState("");
   
   // New announcement form state
   const [newAnnouncement, setNewAnnouncement] = useState({
@@ -138,18 +128,6 @@ const AdminDashboard = () => {
   
   // Edit announcement state
   const [editingAnnouncement, setEditingAnnouncement] = useState<Announcement | null>(null);
-  
-  // Event form state
-  const [newEvent, setNewEvent] = useState({
-    title: "",
-    date: "",
-    time: "",
-    location: "",
-    category: "School Event"
-  });
-  
-  // Edit event state
-  const [editingEvent, setEditingEvent] = useState<Event | null>(null);
 
   // Fetch books from Supabase
   const { data: books = [], isLoading: isBooksLoading, refetch: refetchBooks } = useQuery({
@@ -162,13 +140,6 @@ const AdminDashboard = () => {
   const { data: announcements = [], isLoading: isAnnouncementsLoading, refetch: refetchAnnouncements } = useQuery({
     queryKey: ["admin-announcements"],
     queryFn: fetchAnnouncements,
-    enabled: isAuthenticated,
-  });
-  
-  // Fetch events from local storage
-  const { data: events = [], isLoading: isEventsLoading, refetch: refetchEvents } = useQuery({
-    queryKey: ["admin-events"],
-    queryFn: fetchEvents,
     enabled: isAuthenticated,
   });
 
@@ -225,12 +196,6 @@ const AdminDashboard = () => {
     announcement.title.toLowerCase().includes(announcementSearchTerm.toLowerCase()) ||
     announcement.category.toLowerCase().includes(announcementSearchTerm.toLowerCase()) ||
     announcement.description.toLowerCase().includes(announcementSearchTerm.toLowerCase())
-  );
-  
-  const filteredEvents = events.filter(event => 
-    event.title.toLowerCase().includes(eventSearchTerm.toLowerCase()) ||
-    event.category.toLowerCase().includes(eventSearchTerm.toLowerCase()) ||
-    event.location.toLowerCase().includes(eventSearchTerm.toLowerCase())
   );
 
   const handleDeleteBook = async (id: string) => {
@@ -307,66 +272,6 @@ const AdminDashboard = () => {
       toast.error("Failed to delete announcement");
     }
   };
-  
-  const handleAddEvent = async () => {
-    try {
-      if (!newEvent.title || !newEvent.date || !newEvent.time || !newEvent.location) {
-        toast.error("Please fill all required fields");
-        return;
-      }
-      
-      // Add event to local storage
-      addLocalEvent({
-        title: newEvent.title,
-        date: newEvent.date,
-        time: newEvent.time,
-        location: newEvent.location,
-        category: newEvent.category
-      });
-      
-      toast.success("Event added successfully");
-      setNewEvent({
-        title: "",
-        date: "",
-        time: "",
-        location: "",
-        category: "School Event"
-      });
-      refetchEvents();
-    } catch (error) {
-      console.error("Error adding event:", error);
-      toast.error("Failed to add event");
-    }
-  };
-  
-  const handleUpdateEvent = async () => {
-    if (!editingEvent) return;
-    
-    try {
-      // Update event in local storage
-      updateLocalEvent(editingEvent);
-      
-      toast.success("Event updated successfully");
-      setEditingEvent(null);
-      refetchEvents();
-    } catch (error) {
-      console.error("Error updating event:", error);
-      toast.error("Failed to update event");
-    }
-  };
-  
-  const handleDeleteEvent = async (id: string) => {
-    try {
-      // Delete event from local storage
-      deleteLocalEvent(id);
-      
-      toast.success("Event deleted successfully");
-      refetchEvents();
-    } catch (error) {
-      console.error("Error deleting event:", error);
-      toast.error("Failed to delete event");
-    }
-  };
 
   if (isLoading) {
     return (
@@ -405,7 +310,7 @@ const AdminDashboard = () => {
       </header>
       
       <main className="container mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
           <Card>
             <CardHeader className="pb-2">
               <CardTitle className="text-lg font-medium">Total Books</CardTitle>
@@ -432,7 +337,7 @@ const AdminDashboard = () => {
             </CardContent>
           </Card>
           
-          <Card className="bg-primary text-white">
+          <Card className="bg-primary text-white md:col-span-2">
             <CardContent className="pt-6">
               {/* Replace the old upload button with our new component */}
               <FileUploadComponent onUploadComplete={refetchBooks} />
@@ -444,7 +349,6 @@ const AdminDashboard = () => {
           <TabsList className="mb-6">
             <TabsTrigger value="books">Manage Books</TabsTrigger>
             <TabsTrigger value="announcements">Manage Announcements</TabsTrigger>
-            <TabsTrigger value="events">Manage Events</TabsTrigger>
           </TabsList>
           
           <TabsContent value="books">
@@ -527,7 +431,6 @@ const AdminDashboard = () => {
                     <Dialog>
                       <DialogTrigger asChild>
                         <Button>
-                          <PlusCircle className="h-4 w-4 mr-2" />
                           Add Announcement
                         </Button>
                       </DialogTrigger>
@@ -722,255 +625,6 @@ const AdminDashboard = () => {
                                 variant="outline" 
                                 className="text-red-500"
                                 onClick={() => handleDeleteAnnouncement(announcement.id)}
-                              >
-                                Delete
-                              </Button>
-                            </div>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
-          
-          <TabsContent value="events">
-            <Card>
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle>Manage Events</CardTitle>
-                  <div className="flex gap-4">
-                    <div className="w-64">
-                      <Input 
-                        type="text" 
-                        placeholder="Search events..." 
-                        value={eventSearchTerm}
-                        onChange={(e) => setEventSearchTerm(e.target.value)}
-                      />
-                    </div>
-                    
-                    <Dialog>
-                      <DialogTrigger asChild>
-                        <Button>
-                          <PlusCircle className="h-4 w-4 mr-2" />
-                          Add Event
-                        </Button>
-                      </DialogTrigger>
-                      <DialogContent>
-                        <DialogHeader>
-                          <DialogTitle>Add New Event</DialogTitle>
-                          <DialogDescription>
-                            Create a new event for the school calendar.
-                          </DialogDescription>
-                        </DialogHeader>
-                        
-                        <div className="grid gap-4 py-4">
-                          <div className="grid gap-2">
-                            <Label htmlFor="event-title">Title</Label>
-                            <Input
-                              id="event-title"
-                              placeholder="Enter event title"
-                              value={newEvent.title}
-                              onChange={(e) => setNewEvent({...newEvent, title: e.target.value})}
-                            />
-                          </div>
-                          
-                          <div className="grid gap-2">
-                            <Label htmlFor="event-date">Date</Label>
-                            <Input
-                              id="event-date"
-                              placeholder="e.g., September 15, 2025"
-                              value={newEvent.date}
-                              onChange={(e) => setNewEvent({...newEvent, date: e.target.value})}
-                            />
-                          </div>
-                          
-                          <div className="grid gap-2">
-                            <Label htmlFor="event-time">Time</Label>
-                            <Input
-                              id="event-time"
-                              placeholder="e.g., 3:00 PM - 5:00 PM"
-                              value={newEvent.time}
-                              onChange={(e) => setNewEvent({...newEvent, time: e.target.value})}
-                            />
-                          </div>
-                          
-                          <div className="grid gap-2">
-                            <Label htmlFor="event-location">Location</Label>
-                            <Input
-                              id="event-location"
-                              placeholder="e.g., Main Auditorium"
-                              value={newEvent.location}
-                              onChange={(e) => setNewEvent({...newEvent, location: e.target.value})}
-                            />
-                          </div>
-                          
-                          <div className="grid gap-2">
-                            <Label htmlFor="event-category">Category</Label>
-                            <Select
-                              value={newEvent.category}
-                              onValueChange={(value) => setNewEvent({...newEvent, category: value})}
-                            >
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select a category" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="School Event">School Event</SelectItem>
-                                <SelectItem value="Athletics">Athletics</SelectItem>
-                                <SelectItem value="Arts">Arts</SelectItem>
-                                <SelectItem value="College Prep">College Prep</SelectItem>
-                                <SelectItem value="Academic">Academic</SelectItem>
-                                <SelectItem value="Holiday">Holiday</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </div>
-                        </div>
-                        
-                        <DialogFooter>
-                          <Button onClick={handleAddEvent}>
-                            Add Event
-                          </Button>
-                        </DialogFooter>
-                      </DialogContent>
-                    </Dialog>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                {isEventsLoading ? (
-                  <div className="flex justify-center py-10">
-                    <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
-                  </div>
-                ) : (
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Title</TableHead>
-                        <TableHead>Date</TableHead>
-                        <TableHead>Time</TableHead>
-                        <TableHead>Location</TableHead>
-                        <TableHead>Category</TableHead>
-                        <TableHead>Actions</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {filteredEvents.map((event) => (
-                        <TableRow key={event.id}>
-                          <TableCell className="font-medium">{event.title}</TableCell>
-                          <TableCell>{event.date}</TableCell>
-                          <TableCell>{event.time}</TableCell>
-                          <TableCell>{event.location}</TableCell>
-                          <TableCell>{event.category}</TableCell>
-                          <TableCell>
-                            <div className="flex space-x-2">
-                              <Dialog>
-                                <DialogTrigger asChild>
-                                  <Button 
-                                    size="sm" 
-                                    variant="outline"
-                                    onClick={() => setEditingEvent(event)}
-                                  >
-                                    Edit
-                                  </Button>
-                                </DialogTrigger>
-                                <DialogContent>
-                                  <DialogHeader>
-                                    <DialogTitle>Edit Event</DialogTitle>
-                                    <DialogDescription>
-                                      Make changes to the event details.
-                                    </DialogDescription>
-                                  </DialogHeader>
-                                  
-                                  {editingEvent && (
-                                    <div className="grid gap-4 py-4">
-                                      <div className="grid gap-2">
-                                        <Label htmlFor="edit-event-title">Title</Label>
-                                        <Input
-                                          id="edit-event-title"
-                                          value={editingEvent.title}
-                                          onChange={(e) => setEditingEvent({
-                                            ...editingEvent,
-                                            title: e.target.value
-                                          })}
-                                        />
-                                      </div>
-                                      
-                                      <div className="grid gap-2">
-                                        <Label htmlFor="edit-event-date">Date</Label>
-                                        <Input
-                                          id="edit-event-date"
-                                          value={editingEvent.date}
-                                          onChange={(e) => setEditingEvent({
-                                            ...editingEvent,
-                                            date: e.target.value
-                                          })}
-                                        />
-                                      </div>
-                                      
-                                      <div className="grid gap-2">
-                                        <Label htmlFor="edit-event-time">Time</Label>
-                                        <Input
-                                          id="edit-event-time"
-                                          value={editingEvent.time}
-                                          onChange={(e) => setEditingEvent({
-                                            ...editingEvent,
-                                            time: e.target.value
-                                          })}
-                                        />
-                                      </div>
-                                      
-                                      <div className="grid gap-2">
-                                        <Label htmlFor="edit-event-location">Location</Label>
-                                        <Input
-                                          id="edit-event-location"
-                                          value={editingEvent.location}
-                                          onChange={(e) => setEditingEvent({
-                                            ...editingEvent,
-                                            location: e.target.value
-                                          })}
-                                        />
-                                      </div>
-                                      
-                                      <div className="grid gap-2">
-                                        <Label htmlFor="edit-event-category">Category</Label>
-                                        <Select
-                                          value={editingEvent.category}
-                                          onValueChange={(value) => setEditingEvent({
-                                            ...editingEvent,
-                                            category: value
-                                          })}
-                                        >
-                                          <SelectTrigger>
-                                            <SelectValue placeholder="Select a category" />
-                                          </SelectTrigger>
-                                          <SelectContent>
-                                            <SelectItem value="School Event">School Event</SelectItem>
-                                            <SelectItem value="Athletics">Athletics</SelectItem>
-                                            <SelectItem value="Arts">Arts</SelectItem>
-                                            <SelectItem value="College Prep">College Prep</SelectItem>
-                                            <SelectItem value="Academic">Academic</SelectItem>
-                                            <SelectItem value="Holiday">Holiday</SelectItem>
-                                          </SelectContent>
-                                        </Select>
-                                      </div>
-                                    </div>
-                                  )}
-                                  
-                                  <DialogFooter>
-                                    <Button onClick={handleUpdateEvent}>
-                                      Save Changes
-                                    </Button>
-                                  </DialogFooter>
-                                </DialogContent>
-                              </Dialog>
-                              
-                              <Button 
-                                size="sm" 
-                                variant="outline" 
-                                className="text-red-500"
-                                onClick={() => handleDeleteEvent(event.id)}
                               >
                                 Delete
                               </Button>

@@ -1,24 +1,38 @@
 
 import { useState, useEffect } from 'react';
 import { Calendar } from 'lucide-react';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { getLocalAnnouncements, Announcement } from '@/lib/supabase';
+import { toast } from "sonner";
 
 const Announcements = () => {
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Small delay to simulate fetching
-    const timer = setTimeout(() => {
-      const localAnnouncements = getLocalAnnouncements();
-      setAnnouncements(localAnnouncements);
-      setIsLoading(false);
-    }, 500);
+    const fetchAnnouncements = async () => {
+      try {
+        setIsLoading(true);
+        const data = await getLocalAnnouncements();
+        setAnnouncements(data);
+        setIsLoading(false);
+      } catch (error) {
+        console.error("Error fetching announcements:", error);
+        toast.error("Failed to load announcements");
+        setIsLoading(false);
+      }
+    };
 
-    return () => clearTimeout(timer);
+    fetchAnnouncements();
+    
+    // Set up polling to check for updates every 30 seconds
+    const pollingInterval = setInterval(() => {
+      fetchAnnouncements();
+    }, 30000);
+    
+    return () => clearInterval(pollingInterval);
   }, []);
 
   return (

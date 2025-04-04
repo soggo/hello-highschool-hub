@@ -5,7 +5,7 @@ import Hero from "@/components/home/Hero";
 import Announcements from "@/components/home/Announcements";
 // import QuickLinks from "@/components/home/QuickLinks";
 import AboutSection from "@/components/home/AboutSection";
-import UpcomingEvents from "@/components/home/UpcomingEvents";
+// import UpcomingEvents from "@/components/home/UpcomingEvents";
 
 const Index = () => {
   return (
@@ -16,7 +16,7 @@ const Index = () => {
         {/* <QuickLinks /> */}
         <AboutSection />
         <Announcements />
-        <UpcomingEvents />
+        {/* <UpcomingEvents /> */}
       </main>
       <Footer />
     </div>

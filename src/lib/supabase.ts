@@ -34,178 +34,153 @@ export type Announcement = {
   created_at: string;
 };
 
-// Local storage keys
+// Storage keys
 export const STORAGE_KEYS = {
-  ANNOUNCEMENTS: 'dikor_announcements',
-  EVENTS: 'dikor_events',
+  ANNOUNCEMENTS: 'announcements',
   AUTH: 'dikor_auth'
 };
 
-// Function to get announcements from localStorage
-export const getLocalAnnouncements = (): Announcement[] => {
-  const storedAnnouncements = localStorage.getItem(STORAGE_KEYS.ANNOUNCEMENTS);
-  if (storedAnnouncements) {
-    return JSON.parse(storedAnnouncements);
+// Function to get announcements from Supabase
+export const getLocalAnnouncements = async (): Promise<Announcement[]> => {
+  try {
+    const { data, error } = await supabase
+      .from(STORAGE_KEYS.ANNOUNCEMENTS)
+      .select('*')
+      .order('created_at', { ascending: false });
+    
+    if (error) {
+      console.error('Error fetching announcements:', error);
+      throw error;
+    }
+    
+    if (!data || data.length === 0) {
+      // Create fallback announcements in Supabase if none exist
+      const fallbackAnnouncements = [
+        {
+          "id": "1",
+          "title": "Easter Break",
+          "description": "School will close for Easter break on March 28th and resume on April 8th. Students are advised to complete their assignments before resumption.",
+          "date": "March 28, 2025",
+          "category": "Holiday",
+          "created_at": new Date().toISOString()
+        },
+        {
+          "id": "2",
+          "title": "Second Term Interhouse Sports",
+          "description": "The second term Interhouse Sports competition will take place on May 20th. All students should participate in their respective houses' training sessions.",
+          "date": "May 20, 2025",
+          "category": "Sports",
+          "created_at": new Date().toISOString()
+        },
+        {
+          "id": "3",
+          "title": "Entrance Examination",
+          "description": "The entrance examination for new students will be held on September 14th. Registration closes on September 10th at the school office.",
+          "date": "September 14, 2025",
+          "category": "Admissions",
+          "created_at": new Date().toISOString()
+        },
+      ];
+      
+      // Initialize Supabase with fallback data
+      const { error: insertError } = await supabase
+        .from(STORAGE_KEYS.ANNOUNCEMENTS)
+        .insert(fallbackAnnouncements);
+      
+      if (insertError) {
+        console.error('Error creating fallback announcements:', insertError);
+        return fallbackAnnouncements;
+      }
+      
+      // Re-fetch data after initialization
+      const { data: newData } = await supabase
+        .from(STORAGE_KEYS.ANNOUNCEMENTS)
+        .select('*')
+        .order('created_at', { ascending: false });
+      
+      return newData || fallbackAnnouncements;
+    }
+    
+    return data;
+  } catch (error) {
+    console.error('Error in getLocalAnnouncements:', error);
+    
+    // Return fallback data if Supabase fails
+    return [
+      {
+        "id": "1",
+        "title": "Easter Break",
+        "description": "School will close for Easter break on March 28th and resume on April 8th. Students are advised to complete their assignments before resumption.",
+        "date": "March 28, 2025",
+        "category": "Holiday",
+        "created_at": new Date().toISOString()
+      },
+      {
+        "id": "2",
+        "title": "Second Term Interhouse Sports",
+        "description": "The second term Interhouse Sports competition will take place on May 20th. All students should participate in their respective houses' training sessions.",
+        "date": "May 20, 2025",
+        "category": "Sports",
+        "created_at": new Date().toISOString()
+      },
+      {
+        "id": "3",
+        "title": "Entrance Examination",
+        "description": "The entrance examination for new students will be held on September 14th. Registration closes on September 10th at the school office.",
+        "date": "September 14, 2025",
+        "category": "Admissions",
+        "created_at": new Date().toISOString()
+      },
+    ];
   }
-  
-  // Fallback data in case localStorage is empty
-  const fallbackAnnouncements = [
-    {
-      "id": "1",
-      "title": "Easter Break",
-      "description": "School will close for Easter break on March 28th and resume on April 8th. Students are advised to complete their assignments before resumption.",
-      "date": "March 28, 2025",
-      "category": "Holiday",
-      "created_at": new Date().toISOString()
-    },
-    {
-      "id": "2",
-      "title": "Second Term Interhouse Sports",
-      "description": "The second term Interhouse Sports competition will take place on May 20th. All students should participate in their respective houses' training sessions.",
-      "date": "May 20, 2025",
-      "category": "Sports",
-      "created_at": new Date().toISOString()
-    },
-    {
-      "id": "3",
-      "title": "Entrance Examination",
-      "description": "The entrance examination for new students will be held on September 14th. Registration closes on September 10th at the school office.",
-      "date": "September 14, 2025",
-      "category": "Admissions",
-      "created_at": new Date().toISOString()
-    },
-  ];
-  
-  // Initialize localStorage with fallback data
-  localStorage.setItem(STORAGE_KEYS.ANNOUNCEMENTS, JSON.stringify(fallbackAnnouncements));
-  
-  return fallbackAnnouncements;
 };
 
-// Function to save announcements to localStorage
-export const saveLocalAnnouncements = (announcements: Announcement[]): void => {
-  localStorage.setItem(STORAGE_KEYS.ANNOUNCEMENTS, JSON.stringify(announcements));
-};
-
-// Function to add a new announcement to localStorage
-export const addLocalAnnouncement = (announcement: Omit<Announcement, 'id' | 'created_at'>): Announcement => {
-  const announcements = getLocalAnnouncements();
-  
+// Function to add a new announcement to Supabase
+export const addLocalAnnouncement = async (announcement: Omit<Announcement, 'id' | 'created_at'>): Promise<Announcement> => {
   const newAnnouncement: Announcement = {
     ...announcement,
     id: Date.now().toString(),
     created_at: new Date().toISOString()
   };
   
-  announcements.push(newAnnouncement);
-  saveLocalAnnouncements(announcements);
+  const { data, error } = await supabase
+    .from(STORAGE_KEYS.ANNOUNCEMENTS)
+    .insert([newAnnouncement])
+    .select()
+    .single();
   
-  return newAnnouncement;
+  if (error) {
+    console.error('Error adding announcement:', error);
+    throw error;
+  }
+  
+  return data || newAnnouncement;
 };
 
-// Function to update an announcement in localStorage
-export const updateLocalAnnouncement = (announcement: Announcement): void => {
-  const announcements = getLocalAnnouncements();
-  const index = announcements.findIndex(a => a.id === announcement.id);
+// Function to update an announcement in Supabase
+export const updateLocalAnnouncement = async (announcement: Announcement): Promise<void> => {
+  const { error } = await supabase
+    .from(STORAGE_KEYS.ANNOUNCEMENTS)
+    .update(announcement)
+    .eq('id', announcement.id);
   
-  if (index !== -1) {
-    announcements[index] = announcement;
-    saveLocalAnnouncements(announcements);
+  if (error) {
+    console.error('Error updating announcement:', error);
+    throw error;
   }
 };
 
-// Function to delete an announcement from localStorage
-export const deleteLocalAnnouncement = (id: string): void => {
-  const announcements = getLocalAnnouncements();
-  const updatedAnnouncements = announcements.filter(a => a.id !== id);
-  saveLocalAnnouncements(updatedAnnouncements);
-};
-
-// Events functions
-export const getLocalEvents = (): Event[] => {
-  const storedEvents = localStorage.getItem(STORAGE_KEYS.EVENTS);
-  if (storedEvents) {
-    return JSON.parse(storedEvents);
+// Function to delete an announcement from Supabase
+export const deleteLocalAnnouncement = async (id: string): Promise<void> => {
+  const { error } = await supabase
+    .from(STORAGE_KEYS.ANNOUNCEMENTS)
+    .delete()
+    .eq('id', id);
+  
+  if (error) {
+    console.error('Error deleting announcement:', error);
+    throw error;
   }
-  
-  // Fallback data in case localStorage is empty
-  const fallbackEvents = [
-    {
-      id: "1",
-      title: "Back to School Night",
-      date: "September 2, 2025",
-      time: "6:00 PM - 8:00 PM",
-      location: "Main Auditorium",
-      category: "School Event",
-    },
-    {
-      id: "2",
-      title: "Varsity Football vs. Westside High",
-      date: "September 9, 2025",
-      time: "7:00 PM",
-      location: "Home Field",
-      category: "Athletics",
-    },
-    {
-      id: "3",
-      title: "Fall Arts Festival",
-      date: "October 15, 2025",
-      time: "10:00 AM - 4:00 PM",
-      location: "Student Center",
-      category: "Arts",
-    },
-    {
-      id: "4",
-      title: "College Fair",
-      date: "October 21, 2025",
-      time: "1:00 PM - 5:00 PM",
-      location: "Gymnasium",
-      category: "College Prep",
-    },
-  ];
-  
-  // Initialize localStorage with fallback data
-  localStorage.setItem(STORAGE_KEYS.EVENTS, JSON.stringify(fallbackEvents));
-  
-  return fallbackEvents;
-};
-
-// Function to save events to localStorage
-export const saveLocalEvents = (events: Event[]): void => {
-  localStorage.setItem(STORAGE_KEYS.EVENTS, JSON.stringify(events));
-};
-
-// Function to add a new event to localStorage
-export const addLocalEvent = (event: Omit<Event, 'id'>): Event => {
-  const events = getLocalEvents();
-  
-  const newEvent: Event = {
-    ...event,
-    id: Date.now().toString(),
-  };
-  
-  events.push(newEvent);
-  saveLocalEvents(events);
-  
-  return newEvent;
-};
-
-// Function to update an event in localStorage
-export const updateLocalEvent = (event: Event): void => {
-  const events = getLocalEvents();
-  const index = events.findIndex(e => e.id === event.id);
-  
-  if (index !== -1) {
-    events[index] = event;
-    saveLocalEvents(events);
-  }
-};
-
-// Function to delete an event from localStorage
-export const deleteLocalEvent = (id: string): void => {
-  const events = getLocalEvents();
-  const updatedEvents = events.filter(e => e.id !== id);
-  saveLocalEvents(updatedEvents);
 };
 
 // Auth functions using local storage instead of Supabase
