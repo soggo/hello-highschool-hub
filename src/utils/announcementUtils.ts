@@ -10,8 +10,7 @@ export type Announcement = {
   created_at: string;
 };
 
-// This is a mock function as we can't directly write to JSON files in browser
-// In a real app, this would be handled by a server-side API
+// Get announcements from the JSON file
 export const getAnnouncements = (): Promise<Announcement[]> => {
   return new Promise((resolve) => {
     // Simulate network delay
@@ -21,8 +20,10 @@ export const getAnnouncements = (): Promise<Announcement[]> => {
   });
 };
 
-// Mock function for adding announcements
-// In real implementation, this would call a backend API
+// In a Netlify static site, when an admin adds a new announcement:
+// 1. It will be displayed on the admin panel immediately
+// 2. The admin will need to redeploy the site for the JSON file to be updated
+// 3. Or set up a webhook that triggers a new build when changes are made
 export const addAnnouncement = async (announcement: Omit<Announcement, 'id' | 'created_at'>): Promise<Announcement> => {
   const newAnnouncement = {
     ...announcement,
@@ -30,21 +31,27 @@ export const addAnnouncement = async (announcement: Omit<Announcement, 'id' | 'c
     created_at: new Date().toISOString()
   };
   
-  // In a real application, this would call a backend API to update the JSON file
-  console.log('Adding announcement (mock):', newAnnouncement);
+  // In production, this would:
+  // 1. Submit to a Git-based CMS like Netlify CMS
+  // 2. Or trigger a serverless function that commits to your repository
+  // 3. Or use a webhook to trigger a rebuild with the new data
+  console.log('Adding announcement:', newAnnouncement);
+  console.log('To persist this change in production, you would need to:');
+  console.log('- Use Netlify CMS to manage content');
+  console.log('- Or set up a webhook to trigger a build when changes are made');
+  console.log('- Or use Netlify Functions to update a Git repository');
   
-  // Return the announcement as if it was saved
   return newAnnouncement;
 };
 
-// Mock function for updating announcements
+// Similar to addAnnouncement, this would need a strategy to persist changes
 export const updateAnnouncement = async (announcement: Announcement): Promise<void> => {
-  // In a real application, this would call a backend API to update the JSON file
-  console.log('Updating announcement (mock):', announcement);
+  console.log('Updating announcement:', announcement);
+  console.log('To persist this change in production, see addAnnouncement comments');
 };
 
-// Mock function for deleting announcements
+// Similar to addAnnouncement, this would need a strategy to persist changes
 export const deleteAnnouncement = async (id: string): Promise<void> => {
-  // In a real application, this would call a backend API to update the JSON file
-  console.log('Deleting announcement (mock):', id);
+  console.log('Deleting announcement:', id);
+  console.log('To persist this change in production, see addAnnouncement comments');
 };
