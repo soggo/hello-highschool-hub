@@ -1,5 +1,6 @@
 
 import { createClient } from '@supabase/supabase-js';
+import { Event } from '@/components/home/UpcomingEvents';
 
 const supabaseUrl = 'https://waximxjrumllmjbagnbp.supabase.co';
 const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndheGlteGpydW1sbG1qYmFnbmJwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDM0NTA2OTYsImV4cCI6MjA1OTAyNjY5Nn0.9-Y-V6bLsZNpt5FiiUY2eJUTDyI9UxGqz3Nd3mdKM00';
@@ -36,6 +37,7 @@ export type Announcement = {
 // Local storage keys
 export const STORAGE_KEYS = {
   ANNOUNCEMENTS: 'dikor_announcements',
+  EVENTS: 'dikor_events',
   AUTH: 'dikor_auth'
 };
 
@@ -117,6 +119,93 @@ export const deleteLocalAnnouncement = (id: string): void => {
   const announcements = getLocalAnnouncements();
   const updatedAnnouncements = announcements.filter(a => a.id !== id);
   saveLocalAnnouncements(updatedAnnouncements);
+};
+
+// Events functions
+export const getLocalEvents = (): Event[] => {
+  const storedEvents = localStorage.getItem(STORAGE_KEYS.EVENTS);
+  if (storedEvents) {
+    return JSON.parse(storedEvents);
+  }
+  
+  // Fallback data in case localStorage is empty
+  const fallbackEvents = [
+    {
+      id: "1",
+      title: "Back to School Night",
+      date: "September 2, 2025",
+      time: "6:00 PM - 8:00 PM",
+      location: "Main Auditorium",
+      category: "School Event",
+    },
+    {
+      id: "2",
+      title: "Varsity Football vs. Westside High",
+      date: "September 9, 2025",
+      time: "7:00 PM",
+      location: "Home Field",
+      category: "Athletics",
+    },
+    {
+      id: "3",
+      title: "Fall Arts Festival",
+      date: "October 15, 2025",
+      time: "10:00 AM - 4:00 PM",
+      location: "Student Center",
+      category: "Arts",
+    },
+    {
+      id: "4",
+      title: "College Fair",
+      date: "October 21, 2025",
+      time: "1:00 PM - 5:00 PM",
+      location: "Gymnasium",
+      category: "College Prep",
+    },
+  ];
+  
+  // Initialize localStorage with fallback data
+  localStorage.setItem(STORAGE_KEYS.EVENTS, JSON.stringify(fallbackEvents));
+  
+  return fallbackEvents;
+};
+
+// Function to save events to localStorage
+export const saveLocalEvents = (events: Event[]): void => {
+  localStorage.setItem(STORAGE_KEYS.EVENTS, JSON.stringify(events));
+};
+
+// Function to add a new event to localStorage
+export const addLocalEvent = (event: Omit<Event, 'id'>): Event => {
+  const events = getLocalEvents();
+  
+  const newEvent: Event = {
+    ...event,
+    id: Date.now().toString(),
+  };
+  
+  events.push(newEvent);
+  saveLocalEvents(events);
+  
+  return newEvent;
+};
+
+// Function to update an event in localStorage
+export const updateLocalEvent = (event: Event): void => {
+  const events = getLocalEvents();
+  const index = events.findIndex(e => e.id === event.id);
+  
+  if (index !== -1) {
+    events[index] = event;
+    saveLocalEvents(events);
+  }
+};
+
+// Function to delete an event from localStorage
+export const deleteLocalEvent = (id: string): void => {
+  const events = getLocalEvents();
+  const updatedEvents = events.filter(e => e.id !== id);
+  saveLocalEvents(updatedEvents);
 };
 
 // Auth functions using local storage instead of Supabase
