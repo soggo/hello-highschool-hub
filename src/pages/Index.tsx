@@ -16,7 +16,6 @@ const Index = () => {
         {/* <QuickLinks /> */}
         <AboutSection />
         <Announcements />
-        {/* <UpcomingEvents /> */}
       </main>
       <Footer />
     </div>

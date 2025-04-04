@@ -18,12 +18,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { 
   supabase, 
-  Book, 
-  Announcement, 
-  getLocalAnnouncements, 
-  addLocalAnnouncement, 
-  updateLocalAnnouncement, 
-  deleteLocalAnnouncement,
+  Book,
   getLocalAuthStatus,
   logoutLocalUser
 } from "@/lib/supabase";
@@ -40,6 +35,13 @@ import {
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { 
+  getAnnouncements, 
+  addAnnouncement, 
+  updateAnnouncement, 
+  deleteAnnouncement,
+  Announcement
+} from "@/utils/announcementUtils";
 
 // Mock data fallback
 const mockBooks = [
@@ -106,8 +108,8 @@ const fetchBooksAdmin = async (): Promise<Book[]> => {
 };
 
 const fetchAnnouncements = async (): Promise<Announcement[]> => {
-  // Using local storage instead of Supabase
-  return getLocalAnnouncements();
+  // Using our new function to get announcements from JSON
+  return getAnnouncements();
 };
 
 const AdminDashboard = () => {
@@ -136,7 +138,7 @@ const AdminDashboard = () => {
     enabled: isAuthenticated,
   });
   
-  // Fetch announcements from local storage
+  // Fetch announcements from JSON file
   const { data: announcements = [], isLoading: isAnnouncementsLoading, refetch: refetchAnnouncements } = useQuery({
     queryKey: ["admin-announcements"],
     queryFn: fetchAnnouncements,
@@ -222,8 +224,8 @@ const AdminDashboard = () => {
         return;
       }
       
-      // Add announcement to local storage
-      addLocalAnnouncement({
+      // Add announcement using our new function
+      await addAnnouncement({
         title: newAnnouncement.title,
         description: newAnnouncement.description,
         date: newAnnouncement.date,
@@ -237,6 +239,10 @@ const AdminDashboard = () => {
         date: "",
         category: "General"
       });
+      
+      // Note: In a real app with a backend API, this would update the JSON file
+      // For this demo, we're just showing a success message
+      toast.info("In a real app, this would update the JSON file on the server");
       refetchAnnouncements();
     } catch (error) {
       console.error("Error adding announcement:", error);
@@ -248,10 +254,12 @@ const AdminDashboard = () => {
     if (!editingAnnouncement) return;
     
     try {
-      // Update announcement in local storage
-      updateLocalAnnouncement(editingAnnouncement);
+      // Update announcement using our new function
+      await updateAnnouncement(editingAnnouncement);
       
       toast.success("Announcement updated successfully");
+      // Note: In a real app with a backend API, this would update the JSON file
+      toast.info("In a real app, this would update the JSON file on the server");
       setEditingAnnouncement(null);
       refetchAnnouncements();
     } catch (error) {
@@ -262,10 +270,12 @@ const AdminDashboard = () => {
   
   const handleDeleteAnnouncement = async (id: string) => {
     try {
-      // Delete announcement from local storage
-      deleteLocalAnnouncement(id);
+      // Delete announcement using our new function
+      await deleteAnnouncement(id);
       
       toast.success("Announcement deleted successfully");
+      // Note: In a real app with a backend API, this would update the JSON file
+      toast.info("In a real app, this would update the JSON file on the server");
       refetchAnnouncements();
     } catch (error) {
       console.error("Error deleting announcement:", error);
@@ -339,7 +349,6 @@ const AdminDashboard = () => {
           
           <Card className="bg-primary text-white md:col-span-2">
             <CardContent className="pt-6">
-              {/* Replace the old upload button with our new component */}
               <FileUploadComponent onUploadComplete={refetchBooks} />
             </CardContent>
           </Card>

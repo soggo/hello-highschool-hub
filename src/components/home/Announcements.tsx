@@ -4,7 +4,7 @@ import { Calendar } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { getLocalAnnouncements, Announcement } from '@/lib/supabase';
+import { getAnnouncements, Announcement } from '@/utils/announcementUtils';
 import { toast } from "sonner";
 
 const Announcements = () => {
@@ -15,7 +15,7 @@ const Announcements = () => {
     const fetchAnnouncements = async () => {
       try {
         setIsLoading(true);
-        const data = await getLocalAnnouncements();
+        const data = await getAnnouncements();
         setAnnouncements(data);
         setIsLoading(false);
       } catch (error) {
@@ -27,7 +27,7 @@ const Announcements = () => {
 
     fetchAnnouncements();
     
-    // Set up polling to check for updates every 30 seconds
+    // Check for updates every 30 seconds
     const pollingInterval = setInterval(() => {
       fetchAnnouncements();
     }, 30000);
