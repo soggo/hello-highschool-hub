@@ -33,20 +33,9 @@ export type Announcement = {
   created_at: string;
 };
 
-export type Event = {
-  id: string;
-  title: string;
-  date: string;
-  time: string;
-  location: string;
-  category: string;
-  created_at: string;
-};
-
 // Local storage keys
 export const STORAGE_KEYS = {
   ANNOUNCEMENTS: 'dikor_announcements',
-  EVENTS: 'dikor_events',
   AUTH: 'dikor_auth'
 };
 
@@ -91,67 +80,9 @@ export const getLocalAnnouncements = (): Announcement[] => {
   return fallbackAnnouncements;
 };
 
-// Function to get events from localStorage
-export const getLocalEvents = (): Event[] => {
-  const storedEvents = localStorage.getItem(STORAGE_KEYS.EVENTS);
-  if (storedEvents) {
-    return JSON.parse(storedEvents);
-  }
-  
-  // Fallback data in case localStorage is empty
-  const fallbackEvents = [
-    {
-      "id": "1",
-      "title": "Back to School Night",
-      "date": "April 15, 2025",
-      "time": "6:00 PM - 8:00 PM",
-      "location": "Main Auditorium",
-      "category": "School Event",
-      "created_at": new Date().toISOString()
-    },
-    {
-      "id": "2",
-      "title": "Varsity Football vs. Westside High",
-      "date": "April 22, 2025",
-      "time": "7:00 PM",
-      "location": "Home Field",
-      "category": "Athletics",
-      "created_at": new Date().toISOString()
-    },
-    {
-      "id": "3",
-      "title": "Fall Arts Festival",
-      "date": "May 5, 2025",
-      "time": "10:00 AM - 4:00 PM",
-      "location": "Student Center",
-      "category": "Arts",
-      "created_at": new Date().toISOString()
-    },
-    {
-      "id": "4",
-      "title": "College Fair",
-      "date": "May 15, 2025",
-      "time": "1:00 PM - 5:00 PM",
-      "location": "Gymnasium",
-      "category": "College Prep",
-      "created_at": new Date().toISOString()
-    },
-  ];
-  
-  // Initialize localStorage with fallback data
-  localStorage.setItem(STORAGE_KEYS.EVENTS, JSON.stringify(fallbackEvents));
-  
-  return fallbackEvents;
-};
-
 // Function to save announcements to localStorage
 export const saveLocalAnnouncements = (announcements: Announcement[]): void => {
   localStorage.setItem(STORAGE_KEYS.ANNOUNCEMENTS, JSON.stringify(announcements));
-};
-
-// Function to save events to localStorage
-export const saveLocalEvents = (events: Event[]): void => {
-  localStorage.setItem(STORAGE_KEYS.EVENTS, JSON.stringify(events));
 };
 
 // Function to add a new announcement to localStorage
@@ -170,22 +101,6 @@ export const addLocalAnnouncement = (announcement: Omit<Announcement, 'id' | 'cr
   return newAnnouncement;
 };
 
-// Function to add a new event to localStorage
-export const addLocalEvent = (event: Omit<Event, 'id' | 'created_at'>): Event => {
-  const events = getLocalEvents();
-  
-  const newEvent: Event = {
-    ...event,
-    id: Date.now().toString(),
-    created_at: new Date().toISOString()
-  };
-  
-  events.push(newEvent);
-  saveLocalEvents(events);
-  
-  return newEvent;
-};
-
 // Function to update an announcement in localStorage
 export const updateLocalAnnouncement = (announcement: Announcement): void => {
   const announcements = getLocalAnnouncements();
@@ -197,29 +112,11 @@ export const updateLocalAnnouncement = (announcement: Announcement): void => {
   }
 };
 
-// Function to update an event in localStorage
-export const updateLocalEvent = (event: Event): void => {
-  const events = getLocalEvents();
-  const index = events.findIndex(e => e.id === event.id);
-  
-  if (index !== -1) {
-    events[index] = event;
-    saveLocalEvents(events);
-  }
-};
-
 // Function to delete an announcement from localStorage
 export const deleteLocalAnnouncement = (id: string): void => {
   const announcements = getLocalAnnouncements();
   const updatedAnnouncements = announcements.filter(a => a.id !== id);
   saveLocalAnnouncements(updatedAnnouncements);
-};
-
-// Function to delete an event from localStorage
-export const deleteLocalEvent = (id: string): void => {
-  const events = getLocalEvents();
-  const updatedEvents = events.filter(e => e.id !== id);
-  saveLocalEvents(updatedEvents);
 };
 
 // Auth functions using local storage instead of Supabase
