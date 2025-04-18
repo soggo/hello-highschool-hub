@@ -1,13 +1,4 @@
-
 [
-  {
-    "id": "1",
-    "title": "Easter Break",
-    "description": "School will close for Easter break on March 28th and resume on April 8th. Students are advised to complete their assignments before resumption.",
-    "date": "March 28, 2025",
-    "category": "Holiday",
-    "created_at": "2025-03-15T00:00:00Z"
-  },
   {
     "id": "2",
     "title": "Second Term Interhouse Sports",
