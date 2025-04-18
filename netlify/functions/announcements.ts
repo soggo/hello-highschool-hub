@@ -2,11 +2,8 @@
 import { Handler } from '@netlify/functions';
 import { Octokit } from '@octokit/rest';
 
-const octokit = new Octokit({
-  auth: process.env.GITHUB_TOKEN,
-});
-
-// Extract correct owner and repo values from environment variables
+// Get GitHub authentication token from environment variables
+const githubToken = process.env.GITHUB_TOKEN;
 const owner = process.env.GITHUB_OWNER;
 const repo = process.env.GITHUB_REPO;
 const baseBranch = process.env.GITHUB_BRANCH || 'main';
@@ -24,12 +21,15 @@ export const handler: Handler = async (event) => {
     console.log('Processing request with body:', event.body);
     const { action, data } = JSON.parse(event.body);
     
-    // Validating required environment variables
-    if (!process.env.GITHUB_TOKEN) {
+    // Validating required environment variables with clear error messages
+    if (!githubToken) {
       console.error('GITHUB_TOKEN environment variable is not set');
       return {
         statusCode: 500,
-        body: JSON.stringify({ error: 'Server configuration error: GITHUB_TOKEN missing' }),
+        body: JSON.stringify({ 
+          error: 'Server configuration error: GITHUB_TOKEN missing or invalid',
+          details: 'The GitHub token is missing or invalid. Please check your Netlify environment variables.'
+        }),
       };
     }
 
@@ -37,7 +37,10 @@ export const handler: Handler = async (event) => {
       console.error('GITHUB_OWNER environment variable is not set');
       return {
         statusCode: 500,
-        body: JSON.stringify({ error: 'Server configuration error: GITHUB_OWNER missing' }),
+        body: JSON.stringify({ 
+          error: 'Server configuration error: GITHUB_OWNER missing',
+          details: 'Make sure to set GITHUB_OWNER to your GitHub username (not the full URL)'
+        }),
       };
     }
 
@@ -45,11 +48,34 @@ export const handler: Handler = async (event) => {
       console.error('GITHUB_REPO environment variable is not set');
       return {
         statusCode: 500,
-        body: JSON.stringify({ error: 'Server configuration error: GITHUB_REPO missing' }),
+        body: JSON.stringify({ 
+          error: 'Server configuration error: GITHUB_REPO missing',
+          details: 'Make sure to set GITHUB_REPO to your repository name (not the full URL)'
+        }),
       };
     }
 
     console.log(`Using GitHub repo: ${owner}/${repo}, branch: ${baseBranch}`);
+
+    // Create Octokit instance with the token
+    const octokit = new Octokit({
+      auth: githubToken,
+    });
+
+    // Verify token first
+    try {
+      await octokit.rest.users.getAuthenticated();
+      console.log('GitHub token is valid');
+    } catch (error) {
+      console.error('GitHub token validation error:', error);
+      return {
+        statusCode: 401,
+        body: JSON.stringify({ 
+          error: 'GitHub authentication failed',
+          details: 'Your GitHub token is invalid or expired. Please generate a new token with the "repo" scope and update your Netlify environment variables.'
+        }),
+      };
+    }
 
     // Get current file content
     let fileData;
@@ -65,16 +91,42 @@ export const handler: Handler = async (event) => {
       console.log('Retrieved file data successfully');
     } catch (error) {
       console.error('Error fetching file content:', error);
+      
+      // Provide more specific error message based on status code
+      if (error.status === 404) {
+        return {
+          statusCode: 404,
+          body: JSON.stringify({ 
+            error: 'File not found',
+            details: `The file ${filePath} was not found in repository ${owner}/${repo} on branch ${baseBranch}. Please make sure the repository and file path are correct.`
+          }),
+        };
+      } else if (error.status === 401 || error.status === 403) {
+        return {
+          statusCode: error.status,
+          body: JSON.stringify({ 
+            error: 'Permission denied',
+            details: 'The GitHub token does not have sufficient permissions. Make sure it has the "repo" scope.'
+          }),
+        };
+      }
+      
       return {
         statusCode: 500,
-        body: JSON.stringify({ error: 'Failed to fetch announcements file' }),
+        body: JSON.stringify({ 
+          error: 'Failed to fetch announcements file',
+          details: error.message
+        }),
       };
     }
 
     if (!('content' in fileData)) {
       return {
         statusCode: 404,
-        body: JSON.stringify({ error: 'File not found or is a directory' }),
+        body: JSON.stringify({ 
+          error: 'File not found or is a directory',
+          details: `${filePath} is not a file or doesn't exist`
+        }),
       };
     }
 
@@ -138,14 +190,20 @@ export const handler: Handler = async (event) => {
       console.error('Error committing changes to GitHub:', error);
       return {
         statusCode: 500,
-        body: JSON.stringify({ error: 'Failed to commit changes to GitHub repository' }),
+        body: JSON.stringify({ 
+          error: 'Failed to commit changes to GitHub repository',
+          details: error.message
+        }),
       };
     }
   } catch (error) {
     console.error('Error processing request:', error);
     return {
       statusCode: 500,
-      body: JSON.stringify({ error: 'Failed to process request', details: error.message }),
+      body: JSON.stringify({ 
+        error: 'Failed to process request', 
+        details: error.message 
+      }),
     };
   }
 };

@@ -29,13 +29,27 @@ const callNetlifyFunction = async (action: string, data: any) => {
       }
     });
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('Netlify function error response:', errorText);
-      throw new Error(`Failed to process announcement: ${errorText}`);
+    const responseText = await response.text();
+    let responseData;
+    
+    try {
+      // Try to parse as JSON
+      responseData = JSON.parse(responseText);
+    } catch (e) {
+      // If not JSON, use as is
+      responseData = { error: responseText };
     }
 
-    return response.json();
+    if (!response.ok) {
+      console.error('Netlify function error response:', responseData);
+      const errorMessage = responseData.details 
+        ? `${responseData.error}: ${responseData.details}`
+        : responseData.error || responseText;
+        
+      throw new Error(errorMessage);
+    }
+
+    return responseData;
   } catch (error) {
     console.error('Error calling Netlify function:', error);
     throw error;
@@ -43,15 +57,31 @@ const callNetlifyFunction = async (action: string, data: any) => {
 };
 
 export const addAnnouncement = async (announcement: Omit<Announcement, 'id' | 'created_at'>): Promise<Announcement> => {
-  const result = await callNetlifyFunction('create', announcement);
-  return result.data;
+  try {
+    const result = await callNetlifyFunction('create', announcement);
+    return result.data;
+  } catch (error) {
+    console.error('Error adding announcement:', error);
+    throw error;
+  }
 };
 
 export const updateAnnouncement = async (announcement: Announcement): Promise<void> => {
-  await callNetlifyFunction('update', announcement);
+  try {
+    await callNetlifyFunction('update', announcement);
+  } catch (error) {
+    console.error('Error updating announcement:', error);
+    throw error;
+  }
 };
 
 export const deleteAnnouncement = async (id: string): Promise<void> => {
-  console.log('Deleting announcement with ID:', id);
-  await callNetlifyFunction('delete', { id });
+  try {
+    console.log('Deleting announcement with ID:', id);
+    await callNetlifyFunction('delete', { id });
+    console.log('Announcement successfully deleted');
+  } catch (error) {
+    console.error('Error deleting announcement:', error);
+    throw error;
+  }
 };
