@@ -9,6 +9,7 @@ const octokit = new Octokit({
 const owner = process.env.GITHUB_OWNER;
 const repo = process.env.GITHUB_REPO;
 const baseBranch = process.env.GITHUB_BRANCH || 'main';
+const filePath = 'src/data/announcements.json';
 
 export const handler: Handler = async (event) => {
   if (!event.body) {
@@ -19,25 +20,68 @@ export const handler: Handler = async (event) => {
   }
 
   try {
+    console.log('Processing request with body:', event.body);
     const { action, data } = JSON.parse(event.body);
-    const filePath = 'src/data/announcements.json';
+    
+    // Validating required environment variables
+    if (!process.env.GITHUB_TOKEN) {
+      console.error('GITHUB_TOKEN environment variable is not set');
+      return {
+        statusCode: 500,
+        body: JSON.stringify({ error: 'Server configuration error: GITHUB_TOKEN missing' }),
+      };
+    }
+
+    if (!owner) {
+      console.error('GITHUB_OWNER environment variable is not set');
+      return {
+        statusCode: 500,
+        body: JSON.stringify({ error: 'Server configuration error: GITHUB_OWNER missing' }),
+      };
+    }
+
+    if (!repo) {
+      console.error('GITHUB_REPO environment variable is not set');
+      return {
+        statusCode: 500,
+        body: JSON.stringify({ error: 'Server configuration error: GITHUB_REPO missing' }),
+      };
+    }
+
+    console.log(`Using GitHub repo: ${owner}/${repo}, branch: ${baseBranch}`);
 
     // Get current file content
-    const { data: fileData } = await octokit.repos.getContent({
-      owner,
-      repo,
-      path: filePath,
-      ref: baseBranch,
-    });
+    let fileData;
+    try {
+      const response = await octokit.repos.getContent({
+        owner,
+        repo,
+        path: filePath,
+        ref: baseBranch,
+      });
+      
+      fileData = response.data;
+      console.log('Retrieved file data successfully');
+    } catch (error) {
+      console.error('Error fetching file content:', error);
+      return {
+        statusCode: 500,
+        body: JSON.stringify({ error: 'Failed to fetch announcements file' }),
+      };
+    }
 
     if (!('content' in fileData)) {
-      throw new Error('File not found or is a directory');
+      return {
+        statusCode: 404,
+        body: JSON.stringify({ error: 'File not found or is a directory' }),
+      };
     }
 
     // Decode current content
     const currentContent = Buffer.from(fileData.content, 'base64').toString();
     const announcements = JSON.parse(currentContent);
     let updatedAnnouncements;
+    let commitMessage;
 
     switch (action) {
       case 'create':
@@ -46,42 +90,61 @@ export const handler: Handler = async (event) => {
           id: Date.now().toString(),
           created_at: new Date().toISOString(),
         }];
+        commitMessage = `Create announcement`;
         break;
       case 'update':
         updatedAnnouncements = announcements.map(ann => 
           ann.id === data.id ? { ...ann, ...data } : ann
         );
+        commitMessage = `Update announcement ${data.id}`;
         break;
       case 'delete':
+        console.log(`Attempting to delete announcement with ID: ${data.id}`);
+        console.log('Current announcements:', announcements.map(a => a.id));
         updatedAnnouncements = announcements.filter(ann => ann.id !== data.id);
+        commitMessage = `Delete announcement ${data.id}`;
+        console.log(`Filtered announcements: ${updatedAnnouncements.length} (was ${announcements.length})`);
         break;
       default:
-        throw new Error('Invalid action');
+        return {
+          statusCode: 400,
+          body: JSON.stringify({ error: 'Invalid action' }),
+        };
     }
 
     // Commit changes
-    await octokit.repos.createOrUpdateFileContents({
-      owner,
-      repo,
-      path: filePath,
-      message: `${action} announcement ${data.id || ''}`,
-      content: Buffer.from(JSON.stringify(updatedAnnouncements, null, 2)).toString('base64'),
-      sha: fileData.sha,
-      branch: baseBranch,
-    });
+    try {
+      await octokit.repos.createOrUpdateFileContents({
+        owner,
+        repo,
+        path: filePath,
+        message: commitMessage,
+        content: Buffer.from(JSON.stringify(updatedAnnouncements, null, 2)).toString('base64'),
+        sha: fileData.sha,
+        branch: baseBranch,
+      });
+      
+      console.log(`Successfully committed changes for action: ${action}`);
 
-    return {
-      statusCode: 200,
-      body: JSON.stringify({
-        message: `Announcement ${action}d successfully`,
-        data: updatedAnnouncements,
-      }),
-    };
+      return {
+        statusCode: 200,
+        body: JSON.stringify({
+          message: `Announcement ${action}d successfully`,
+          data: action === 'create' ? updatedAnnouncements[updatedAnnouncements.length - 1] : updatedAnnouncements,
+        }),
+      };
+    } catch (error) {
+      console.error('Error committing changes to GitHub:', error);
+      return {
+        statusCode: 500,
+        body: JSON.stringify({ error: 'Failed to commit changes to GitHub repository' }),
+      };
+    }
   } catch (error) {
-    console.error('Error:', error);
+    console.error('Error processing request:', error);
     return {
       statusCode: 500,
-      body: JSON.stringify({ error: 'Failed to process request' }),
+      body: JSON.stringify({ error: 'Failed to process request', details: error.message }),
     };
   }
 };

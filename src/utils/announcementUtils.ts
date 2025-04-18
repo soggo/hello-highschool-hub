@@ -19,16 +19,26 @@ export const getAnnouncements = (): Promise<Announcement[]> => {
 };
 
 const callNetlifyFunction = async (action: string, data: any) => {
-  const response = await fetch('/.netlify/functions/announcements', {
-    method: 'POST',
-    body: JSON.stringify({ action, data }),
-  });
+  try {
+    const response = await fetch('/.netlify/functions/announcements', {
+      method: 'POST',
+      body: JSON.stringify({ action, data }),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
 
-  if (!response.ok) {
-    throw new Error('Failed to process announcement');
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Netlify function error:', errorText);
+      throw new Error(`Failed to process announcement: ${errorText}`);
+    }
+
+    return response.json();
+  } catch (error) {
+    console.error('Error calling Netlify function:', error);
+    throw error;
   }
-
-  return response.json();
 };
 
 export const addAnnouncement = async (announcement: Omit<Announcement, 'id' | 'created_at'>): Promise<Announcement> => {
@@ -41,5 +51,6 @@ export const updateAnnouncement = async (announcement: Announcement): Promise<vo
 };
 
 export const deleteAnnouncement = async (id: string): Promise<void> => {
+  console.log('Deleting announcement with ID:', id);
   await callNetlifyFunction('delete', { id });
 };

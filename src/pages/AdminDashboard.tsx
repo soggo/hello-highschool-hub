@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Book as BookIcon, User, LogOut, BellRing } from "lucide-react";
@@ -270,16 +269,23 @@ const AdminDashboard = () => {
   
   const handleDeleteAnnouncement = async (id: string) => {
     try {
-      // Delete announcement using our new function
+      console.log(`Attempting to delete announcement with ID: ${id}`);
+      // Show loading toast
+      toast.loading('Deleting announcement...');
+      
+      // Delete announcement using our function
       await deleteAnnouncement(id);
       
+      // Dismiss loading toast and show success
+      toast.dismiss();
       toast.success("Announcement deleted successfully");
-      // Note: In a real app with a backend API, this would update the JSON file
-      toast.info("In a real app, this would update the JSON file on the server");
+      
+      // In production, the changes happen in GitHub, so we need to refetch
       refetchAnnouncements();
     } catch (error) {
       console.error("Error deleting announcement:", error);
-      toast.error("Failed to delete announcement");
+      toast.dismiss();
+      toast.error(`Failed to delete announcement: ${error.message}`);
     }
   };
 
