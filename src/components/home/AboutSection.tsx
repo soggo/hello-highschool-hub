@@ -10,7 +10,7 @@ const AboutSection = () => {
           <div className="order-2 md:order-1">
             <h2 className="font-display text-3xl md:text-4xl font-bold mb-6">About Our School</h2>
             <p className="text-lg text-gray-700 mb-6">
-            At DIKOR COMPREHENSIVE COLLEGE, our unwavering focus is on providing all students with a rigorous academic foundation combined with an unyielding commitment to discipline. 
+            At DIKOR Comprehensive College, our unwavering focus is on attaining Academic Excellence that is enshrined on Sound Morals that will make every beneficiary to live a purposeful life, worthy of emulation. 
             </p>
             <div className="grid grid-cols-2 gap-4 mb-8">
               <div className="bg-red-950 p-4 rounded-lg">
@@ -27,7 +27,7 @@ const AboutSection = () => {
               </div>
               <div className="bg-red-950 p-4 rounded-lg">
                 <h4 className="font-display text-2xl font-bold text-gray-300 mb-1">5+</h4>
-                <p className="text-gray-300">Extra Curicular Activities</p>
+                <p className="text-gray-300">Co-Curicular Activities</p>
               </div>
             </div>
             <Button asChild>
@@ -37,7 +37,7 @@ const AboutSection = () => {
           <div className="order-1 md:order-2 flex justify-center">
             <div className="relative">
               <img 
-                src="broad.jpeg" 
+                src="dikorceleb.jpeg" 
                 alt="Dikor students in Lab" 
                 className="rounded-lg shadow-lg z-10 relative w-fullobject-cover"
               />

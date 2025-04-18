@@ -124,24 +124,24 @@ const About = () => {
                   <div className="grid md:grid-cols-2 gap-6">
                     <div className="bg-gray-50 p-6 rounded-lg">
                       <h3 className="font-display text-xl font-bold text-primary mb-3">Discipline</h3>
-                      <p className="text-gray-700">We instill respect, self-control, and diligence, ensuring students uphold strong moral values, obey rules, and stay focused on their goals for a brighter future.</p>
+                      <p className="text-gray-700">Discipline, which is habit of obedience, is the First Law in Heaven! A disciplined person is destined to rule the world. We do not compromise on Discipline!</p>
                     </div>
 
                     <div className="bg-gray-50 p-6 rounded-lg">
-                      <h3 className="font-display text-xl font-bold text-primary mb-3">Excellence</h3>
-                      <p className="text-gray-700">We pursue excellence in all aspects of education, challenging students to reach their highest potential.</p>
+                      <h3 className="font-display text-xl font-bold text-primary mb-3">Punctuality</h3>
+                      <p className="text-gray-700"> Punctuality to us, is not only the "beginning of success," but an indication of being dutiful and reliable. Life is timed; one must always work with time, for a purposeful life. We have zero tolerance for lateness</p>
                     </div>
                     <div className="bg-gray-50 p-6 rounded-lg">
-                      <h3 className="font-display text-xl font-bold text-primary mb-3">Integrity</h3>
-                      <p className="text-gray-700">We foster honesty, ethics, and responsibility in all aspects of school life.</p>
+                      <h3 className="font-display text-xl font-bold text-primary mb-3">Selfless Service</h3>
+                      <p className="text-gray-700">This is deemed necessary to upgrade our Souls Spiritually! We believe that, an individual is judged in life, not by his/her possessions but positive contributions, to human existence.</p>
                     </div>
                     <div className="bg-gray-50 p-6 rounded-lg">
-                      <h3 className="font-display text-xl font-bold text-primary mb-3">Inclusion</h3>
-                      <p className="text-gray-700">We embrace diversity and create an environment where all students feel welcomed and valued.</p>
+                      <h3 className="font-display text-xl font-bold text-primary mb-3">Doing it right!</h3>
+                      <p className="text-gray-700">This tells us to always do the right thing, at the right time, in the right way, and with the right mind. This value is aimed at making every individual that belongs to us to be conscientious and righteous at all times</p>
                     </div>
                     <div className="bg-gray-50 p-6 rounded-lg">
-                      <h3 className="font-display text-xl font-bold text-primary mb-3">Innovation</h3>
-                      <p className="text-gray-700">We encourage creative thinking, problem-solving, and adaptability in our rapidly changing world.</p>
+                      <h3 className="font-display text-xl font-bold text-primary mb-3">Civility</h3>
+                      <p className="text-gray-700">We Encourage every individual to be humble, respectful, affectionate, and compassionate. Civility, simply expressed, is personality fully enhanced!</p>
                     </div>
 
                     <div className="bg-gray-50 p-6 rounded-lg">

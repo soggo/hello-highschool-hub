@@ -11,8 +11,10 @@ const Hero = () => {
             Welcome to <span className="text-primary">Dikor Comprehensive College</span> 
           </h1>
           <p className="text-lg md:text-xl text-gray-700 max-w-lg">
-            Nurturing , inspiring futures. Join our community of excellence where every student can thrive and discover their potential.
+          Discipline Keeping Organization (DIKOR) welcomes you to her Power House <br />DIKOR Comprehensive College.
           </p>
+          <p className="text-lg md:text-xl text-gray-700 max-w-lg">This Voluntary Organization's College is built to provide an all-round Functional Education that will bring out the Best in every product of her institution. 
+            Founder: Adebisi Adenaya (Royor Of DIKOR)</p>
           <div className="flex flex-wrap gap-4 pt-2">
             <Button size="lg" asChild>
               <Link to="/about">Discover More</Link>
@@ -25,9 +27,9 @@ const Hero = () => {
         <div className="relative hidden md:block">
           <div className="absolute inset-0 bg-primary/10 rounded-lg -rotate-3"></div>
           <img 
-            src="/dikorlab2.jpeg" 
+            src="/dikorsal.jpeg" 
             alt="Students Dikor"
-            className="rounded-lg shadow-lg object-cover w-full h-[1100px] relative z-10 rotate-3"
+            className="rounded-lg shadow-lg object-cover object-top w-full h-1/8 relative z-10 rotate-3"
           />
         </div>
       </div>
