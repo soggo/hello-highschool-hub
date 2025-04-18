@@ -4,9 +4,9 @@ import { Link } from 'react-router-dom';
 
 const Hero = () => {
   return (
-    <section className="hero-gradient min-h-[600px] flex items-center relative">
+    <section className="bg-red-800/20 min-h-[600px] flex items-center border relative">
       <div className="container mx-auto px-4 py-16 grid md:grid-cols-2 gap-8 items-center">
-        <div className="space-y-6">
+        <div className="space-y-9">
           <h1 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
             Welcome to <span className="text-primary">Dikor Comprehensive College</span> 
           </h1>
@@ -25,7 +25,7 @@ const Hero = () => {
           </div>
         </div>
         <div className="relative hidden md:block">
-          <div className="absolute inset-0 bg-primary/10 rounded-lg -rotate-3"></div>
+          <div className="absolute inset-0 bg-red-600/10 rounded-lg -rotate-3"></div>
           <img 
             src="/dikorsal.jpeg" 
             alt="Students Dikor"

@@ -13,21 +13,21 @@ const AboutSection = () => {
             At DIKOR Comprehensive College, our unwavering focus is on attaining Academic Excellence that is enshrined on Sound Morals that will make every beneficiary to live a purposeful life, worthy of emulation. 
             </p>
             <div className="grid grid-cols-2 gap-4 mb-8">
-              <div className="bg-red-950 p-4 rounded-lg">
-                <h4 className="font-display text-2xl font-bold text-gray-300 mb-1">100%</h4>
-                <p className="text-gray-300">Graduation Rate</p>
+              <div className="bg-red-800/95 p-4 rounded-lg">
+                <h4 className="font-display text-2xl font-bold text-gray-200 mb-1">100%</h4>
+                <p className="text-gray-200">Graduation Rate</p>
               </div>
-              <div className="bg-red-950 p-4 rounded-lg">
-                <h4 className="font-display text-2xl font-bold text-gray-300 mb-1">Balanced</h4>
-                <p className="text-gray-300">Student-Teacher Ratio</p>
+              <div className="bg-red-800/95 p-4 rounded-lg">
+                <h4 className="font-display text-2xl font-bold text-gray-200 mb-1">Balanced</h4>
+                <p className="text-gray-200">Student-Teacher Ratio</p>
               </div>
-              <div className="bg-red-950 p-4 rounded-lg">
-                <h4 className="font-display text-2xl font-bold text-gray-300 mb-1">10+</h4>
-                <p className="text-gray-300">Subjects</p>
+              <div className="bg-red-800/95 p-4 rounded-lg">
+                <h4 className="font-display text-2xl font-bold text-gray-200 mb-1">10+</h4>
+                <p className="text-gray-200">Subjects</p>
               </div>
-              <div className="bg-red-950 p-4 rounded-lg">
-                <h4 className="font-display text-2xl font-bold text-gray-300 mb-1">5+</h4>
-                <p className="text-gray-300">Co-Curicular Activities</p>
+              <div className="bg-red-800/95 p-4 rounded-lg">
+                <h4 className="font-display text-2xl font-bold text-gray-200 mb-1">5+</h4>
+                <p className="text-white">Co-Curicular Activities</p>
               </div>
             </div>
             <Button asChild>
