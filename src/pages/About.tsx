@@ -71,7 +71,7 @@ const About = () => {
             >
               <div className="hidden">
                 <TabsList className="grid w-full grid-cols-3 mb-8">
-                  <TabsTrigger value="history">Our History</TabsTrigger>
+                  <TabsTrigger value="history">Our Story</TabsTrigger>
                   <TabsTrigger value="mission">Mission & Vision</TabsTrigger>
                   <TabsTrigger value="staff">Leadership & Staff</TabsTrigger>
                 </TabsList>
@@ -82,10 +82,10 @@ const About = () => {
                   <div>
                     <h2 className="font-display text-3xl font-bold mb-4">Our Story</h2>
                     <p className="text-gray-700 mb-4">
-                    At DIKOR COMPREHENSIVE COLLEGE, our unwavering focus is on providing all students with a rigorous academic foundation combined with an unyielding commitment to discipline. We believe that discipline is the bedrock of success, shaping individuals into responsible and outstanding members of society. This aligns with the well-established principle in psychology that we become what we consistently practice—excellence and self-control are habits cultivated through proper training. In essence, our goal is to produce disciplined, morally upright, and academically sound graduates.
+                    At DIKOR Comprehensive College, our unwavering focus is on attaining Academic Excellence that is enshrined on Sound Morals that will make every beneficiary to live a purposeful life, worthy of emulation. This aligns with the well-established principle in psychology that we become what we consistently practice excellence and self-control are habits cultivated through proper training. In essence, our goal is to produce disciplined, morally upright, and academically sound graduates.
                     </p>
                     <p className="text-gray-700 mb-4">
-                    Inspired by the structured and disciplined approach of great educators and reformers, the proprietor of DIKOR COMPREHENSIVE COLLEGE, an esteemed educationist and former inspector of education, has dedicated himself to instilling values that shape character and intellect. No responsible parent would entrust their child to an environment that fosters indiscipline, knowing that lack of structure today breeds failure tomorrow.
+                    Inspired by the structured and disciplined approach of great educators and reformers, No responsible parent would entrust their child to an environment that fosters indiscipline, knowing that lack of structure today breeds failure tomorrow.
                     </p>
                     <p className="text-gray-700">
                      
@@ -116,7 +116,7 @@ const About = () => {
                   
                   <h2 className="font-display text-3xl font-bold mb-4">Our Mission</h2>
                   <p className="text-gray-700 mb-8">
-                    To cultivate a diverse learning community where students develop the knowledge, skills, and character needed to succeed in an ever-changing world. We are committed to academic excellence, personal growth, and civic responsibility.
+                  To provide learning experiences that are predicated on the fear of God and discipline, for every learner, in a serene and rich educational institution, for a fruitful life
                   </p>
 
                   
@@ -144,11 +144,6 @@ const About = () => {
                       <p className="text-gray-700">We Encourage every individual to be humble, respectful, affectionate, and compassionate. Civility, simply expressed, is personality fully enhanced!</p>
                     </div>
 
-                    <div className="bg-gray-50 p-6 rounded-lg">
-                      <h3 className="font-display text-xl font-bold text-primary mb-3">Responsibility
-                      </h3>
-                      <p className="text-gray-700">We nurture accountability and a strong work ethic, ensuring students take ownership of their actions and commitments..</p>
-                    </div>
                   </div>
                 </div>
               </TabsContent>
@@ -163,7 +158,7 @@ const About = () => {
                       className="w-48 h-48 rounded-full object-cover  object-top mx-auto mb-4"
                     />
                     <h3 className="font-display text-xl font-bold">Mr Adebisi Adenaya</h3>
-                    <p className="text-primary font-medium">Proprietor</p>
+                    <p className="text-primary font-medium">Founder - Royor Of DIKOR</p>
                   </div>
                   {/* <div className="text-center">
                     <img 

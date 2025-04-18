@@ -62,9 +62,13 @@ const Footer = () => {
               <p>Lagos</p>
               <p className="flex items-center gap-2 mt-4">
                 <Phone size={16} />
-                (+234) 0807 994 7272
-
+                Telephone: (+234) 0815 343 1521
               </p>
+              <p className="flex items-center gap-2 mt-4">
+                <Phone size={16} />
+                Whatsapp: (+234) 0807 994 7272
+              </p>
+              
               <p className="flex items-center gap-2">
                 <Mail size={16} />
                 info@DikorComprehensiveCollege.com
