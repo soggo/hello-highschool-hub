@@ -1,13 +1,5 @@
 [
   {
-    "id": "3",
-    "title": "Entrance Examination",
-    "description": "The entrance examination for new students will be held on September 14th. Registration closes on September 10th at the school office.",
-    "date": "September 14, 2025",
-    "category": "Admissions",
-    "created_at": "2025-03-20T00:00:00Z"
-  },
-  {
     "id": "4",
     "title": "Parents-Teachers Meeting",
     "description": "The termly Parents-Teachers Meeting will be held on April 15th. All parents are expected to attend to discuss their children's academic progress.",
