@@ -1,25 +1,25 @@
 [
   {
     "id": "4",
-    "title": "Parents-Teachers Meeting",
-    "description": "Test",
-    "date": "April 15, 2025",
+    "title": "  3RD TERM 2024/2025 Academic Session: Resumption",
+    "description": "The school resumes for 3rd term, boarders are to resume to the hostel on Sunday, 27th April, 2025.",
+    "date": "April 28, 2025",
     "category": "Academic",
     "created_at": "2025-03-25T00:00:00Z"
   },
   {
     "id": "5",
-    "title": "School Excursion",
-    "description": "The annual school excursion to the Science Museum will take place on June 5th. Permission slips must be signed and returned by May 28th.",
-    "date": "June 5, 2025",
-    "category": "Event",
+    "title": "Mid-Term",
+    "description": "Mid Term testing commences",
+    "date": "June 9, 2025",
+    "category": "Academic",
     "created_at": "2025-03-30T00:00:00Z"
   },
   {
-    "title": "Test",
-    "description": "Test",
-    "date": "3 April 2023",
-    "category": "General",
+    "title": "Vacation",
+    "description": "3rd term holiday commences.",
+    "date": "August 4 2025",
+    "category": "Holiday",
     "id": "1745003622536",
     "created_at": "2025-04-18T19:13:42.536Z"
   }
