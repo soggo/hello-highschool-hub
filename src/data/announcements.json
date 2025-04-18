@@ -9,10 +9,10 @@
   },
   {
     "id": "5",
-    "title": "School Excursion",
-    "description": "The annual school excursion to the Science Museum will take place on June 5th. Permission slips must be signed and returned by May 28th.",
-    "date": "June 5, 2025",
-    "category": "Event",
+    "title": "Mid-Term: ",
+    "description": "Mid Term testing commences",
+    "date": "June 9, 2025",
+    "category": "Academic",
     "created_at": "2025-03-30T00:00:00Z"
   },
   {
