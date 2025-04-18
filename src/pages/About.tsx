@@ -55,10 +55,12 @@ const About = () => {
                 onValueChange={handleTabChange} 
                 className="max-w-4xl mx-auto"
               >
-                <TabsList className="md:grid md:w-full md:grid-cols-3 md:mb-8 text-4xl md:text-black">
+                <TabsList className="grid w-full grid-cols-3 mb-8 text-black">
                   <TabsTrigger value="history">Our Story</TabsTrigger>
                   <TabsTrigger value="mission">Mission & Vision</TabsTrigger>
-                  <TabsTrigger value="staff">Leadership & Staff</TabsTrigger>
+                  <TabsTrigger value="staff">Leadership 
+                    {/* & Staff */}
+                    </TabsTrigger>
                 </TabsList>
               </Tabs>
             </div>
@@ -70,18 +72,12 @@ const About = () => {
               onValueChange={handleTabChange} 
               className="max-w-4xl mx-auto"
             >
-              <div className="hidden">
-                <TabsList className="grid w-full grid-cols-3 mb-8">
-                  <TabsTrigger value="history">Our Story</TabsTrigger>
-                  <TabsTrigger value="mission">Mission & Vision</TabsTrigger>
-                  <TabsTrigger value="staff">Leadership & Staff</TabsTrigger>
-                </TabsList>
-              </div>
+             
               
               <TabsContent value="history" className="space-y-6">
                 <div className="grid md:grid-cols-2 gap-8 items-center">
                   <div>
-                    <h2 className="font-display text-3xl font-bold mb-4">Our Story</h2>
+                    <h2 className="font-display text-3xl font-bold mb-4 text-primary">Our Story</h2>
                     <p className="text-gray-700 mb-4">
                     At DIKOR Comprehensive College, our unwavering focus is on attaining Academic Excellence that is enshrined on Sound Morals that will make every beneficiary to live a purposeful life, worthy of emulation. This aligns with the well-established principle in psychology that we become what we consistently practice excellence and self-control are habits cultivated through proper training. In essence, our goal is to produce disciplined, morally upright, and academically sound graduates.
                     </p>
@@ -109,19 +105,19 @@ const About = () => {
               <TabsContent value="mission" className="space-y-6">
                 <div>
 
-                <h2 className="font-display text-3xl font-bold mb-4">Our Vision</h2>
+                <h2 className="font-display text-3xl font-bold mb-4 text-primary">Our Vision</h2>
                 <p className="text-gray-700 mb-8">
                   To build First Class Citizens that will be Internationally recognized.
                 </p>
 
                   
-                  <h2 className="font-display text-3xl font-bold mb-4">Our Mission</h2>
+                  <h2 className="font-display text-3xl font-bold mb-4 text-primary">Our Mission</h2>
                   <p className="text-gray-700 mb-8">
                   To provide learning experiences that are predicated on the fear of God and discipline, for every learner, in a serene and rich educational institution, for a fruitful life
                   </p>
 
                   
-                  <h2 className="font-display text-3xl font-bold mb-4">Our Core Values</h2>
+                  <h2 className="font-display text-3xl font-bold mb-4 text-primary">Our Core Values</h2>
                   <div className="grid md:grid-cols-2 gap-6">
                     <div className="bg-gray-50 p-6 rounded-lg">
                       <h3 className="font-display text-xl font-bold text-primary mb-3">Discipline</h3>
@@ -150,7 +146,7 @@ const About = () => {
               </TabsContent>
               
               <TabsContent value="staff" className="space-y-6">
-                <h2 className="font-display text-3xl font-bold mb-6 text-center">Our Leadership Team</h2>
+                <h2 className="font-display text-3xl font-bold mb-6 text-center text-primary">Our Leadership</h2>
                 <div className="grid md:grid-cols gap-6">
                   <div className="text-center">
                     <img 
