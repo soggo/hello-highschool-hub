@@ -241,7 +241,7 @@ const AdminDashboard = () => {
       
       // Note: In a real app with a backend API, this would update the JSON file
       // For this demo, we're just showing a success message
-      toast.info("In a real app, this would update the JSON file on the server");
+      // toast.info("In a real app, this would update the JSON file on the server");
       refetchAnnouncements();
     } catch (error) {
       console.error("Error adding announcement:", error);
@@ -258,7 +258,7 @@ const AdminDashboard = () => {
       
       toast.success("Announcement updated successfully");
       // Note: In a real app with a backend API, this would update the JSON file
-      toast.info("In a real app, this would update the JSON file on the server");
+      // toast.info("In a real app, this would update the JSON file on the server");
       setEditingAnnouncement(null);
       refetchAnnouncements();
     } catch (error) {
