@@ -431,13 +431,13 @@ const AdminDashboard = () => {
           <TabsContent value="announcements">
             <Card>
               <CardHeader>
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
                   <CardTitle>Manage Announcements</CardTitle>
                   <div className="flex gap-4">
                     <div className="w-64">
                       <Input 
                         type="text" 
-                        placeholder="Search announcements..." 
+                        placeholder="Search..." 
                         value={announcementSearchTerm}
                         onChange={(e) => setAnnouncementSearchTerm(e.target.value)}
                       />

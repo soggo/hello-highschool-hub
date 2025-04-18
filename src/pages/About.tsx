@@ -34,9 +34,10 @@ const About = () => {
         <section ref={heroSectionRef} className="bg-[#c20e31]/10 py-16">
           <div className="container mx-auto px-4">
             <div className="max-w-3xl mx-auto text-center">
-              <h1 className="font-display text-4xl md:text-5xl font-bold mb-6">ABOUT <br /> DIKOR COMPREHENSIVE COLLEGE</h1>
+              <h1 className="font-display text-4xl md:text-5xl font-bold mb-6  text-primary">ABOUT <br /> DIKOR COMPREHENSIVE COLLEGE</h1>
               <p className="text-lg text-gray-700 mb-8">
-                Discover our values, and the exceptional team that makes our school community thrive.
+                Discover our values 
+                {/* and the exceptional team that makes our school community thrive. */}
               </p>
             </div>
           </div>
@@ -55,7 +56,7 @@ const About = () => {
                 className="max-w-4xl mx-auto"
               >
                 <TabsList className="grid w-full grid-cols-3 mb-8">
-                  <TabsTrigger value="history">Our History</TabsTrigger>
+                  <TabsTrigger value="history">Our Story</TabsTrigger>
                   <TabsTrigger value="mission">Mission & Vision</TabsTrigger>
                   <TabsTrigger value="staff">Leadership & Staff</TabsTrigger>
                 </TabsList>

@@ -63,7 +63,7 @@ const ELearning = () => {
       <div className="py-12 bg-gray-50">
         <div className="container px-4 mx-auto">
           <div className="max-w-4xl mx-auto text-center mb-12">
-            <h1 className="text-4xl font-bold mb-6">E-Learning Resources</h1>
+            <h1 className="text-4xl font-bold mb-6 text-primary">E-Learning Resources</h1>
             <p className="text-lg text-gray-600 mb-8">
               Access our collection of digital textbooks and learning materials to enhance your educational journey.
             </p>

@@ -132,7 +132,7 @@ const FileUploadComponent = ({ onUploadComplete }: FileUploadProps) => {
           placeholder="Book Title *"
           value={bookData.title}
           onChange={handleInputChange}
-          className="bg-white/10 border-white/20 placeholder:text-white/60 text-white"
+          className="bg-gray-50 border-white/20 placeholder:text-black/60 text-black"
           required
         />
       </div>
@@ -144,7 +144,7 @@ const FileUploadComponent = ({ onUploadComplete }: FileUploadProps) => {
           placeholder="Subject *"
           value={bookData.subject}
           onChange={handleInputChange}
-          className="bg-white/10 border-white/20 placeholder:text-white/60 text-white"
+          className="bg-gray-50 border-white/20 placeholder:text-black/50 text-black"
           required
         />
       </div>
@@ -156,7 +156,7 @@ const FileUploadComponent = ({ onUploadComplete }: FileUploadProps) => {
           placeholder="Grade Level *"
           value={bookData.grade}
           onChange={handleInputChange}
-          className="bg-white/10 border-white/20 placeholder:text-white/60 text-white"
+          className="bg-gray-50 border-white/20 placeholder:text-black/50 text-black"
           required
         />
       </div>
@@ -167,7 +167,7 @@ const FileUploadComponent = ({ onUploadComplete }: FileUploadProps) => {
           placeholder="Description (optional)"
           value={bookData.description}
           onChange={handleInputChange}
-          className="bg-white/10 border-white/20 placeholder:text-white/60 text-white"
+          className="bg-white/50 border-white/20 placeholder:text-black/60 text-black"
           rows={3}
         />
       </div>
