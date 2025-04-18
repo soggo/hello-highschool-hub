@@ -20,6 +20,7 @@ export const getAnnouncements = (): Promise<Announcement[]> => {
 
 const callNetlifyFunction = async (action: string, data: any) => {
   try {
+    console.log(`Calling Netlify function with action: ${action}, data:`, data);
     const response = await fetch('/.netlify/functions/announcements', {
       method: 'POST',
       body: JSON.stringify({ action, data }),
@@ -30,7 +31,7 @@ const callNetlifyFunction = async (action: string, data: any) => {
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('Netlify function error:', errorText);
+      console.error('Netlify function error response:', errorText);
       throw new Error(`Failed to process announcement: ${errorText}`);
     }
 

@@ -6,6 +6,7 @@ const octokit = new Octokit({
   auth: process.env.GITHUB_TOKEN,
 });
 
+// Extract correct owner and repo values from environment variables
 const owner = process.env.GITHUB_OWNER;
 const repo = process.env.GITHUB_REPO;
 const baseBranch = process.env.GITHUB_BRANCH || 'main';
