@@ -55,7 +55,7 @@ const About = () => {
                 onValueChange={handleTabChange} 
                 className="max-w-4xl mx-auto"
               >
-                <TabsList className="grid w-full grid-cols-3 mb-8">
+                <TabsList className="md:grid md:w-full md:grid-cols-3 md:mb-8 text-4xl md:text-black">
                   <TabsTrigger value="history">Our Story</TabsTrigger>
                   <TabsTrigger value="mission">Mission & Vision</TabsTrigger>
                   <TabsTrigger value="staff">Leadership & Staff</TabsTrigger>
