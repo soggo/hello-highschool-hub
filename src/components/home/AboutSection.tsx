@@ -8,7 +8,7 @@ const AboutSection = () => {
       <div className="container mx-auto px-4">
         <div className="grid md:grid-cols-2 gap-12 items-center">
           <div className="order-2 md:order-1">
-            <h2 className="font-display text-3xl md:text-4xl font-bold mb-6">About Our School</h2>
+            <h2 className="font-display text-3xl md:text-4xl font-bold mb-6 text-primary">About Our School</h2>
             <p className="text-lg text-gray-700 mb-6">
             At DIKOR Comprehensive College, our unwavering focus is on attaining Academic Excellence that is enshrined on Sound Morals that will make every beneficiary to live a purposeful life, worthy of emulation. 
             </p>
