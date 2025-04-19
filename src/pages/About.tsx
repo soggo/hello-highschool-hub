@@ -130,7 +130,7 @@ const About = () => {
                     </div>
                     <div className="bg-gray-50 p-6 rounded-lg">
                       <h3 className="font-display text-xl font-bold text-primary mb-3">Selfless Service</h3>
-                      <p className="text-gray-700">This is deemed necessary to upgrade our Souls Spiritually! We believe that, an individual is judged in life, not by his/her possessions but positive contributions, to human existence.</p>
+                      <p className="text-gray-700">This is deemed necessary to upgrade our souls spiritually! We believe that, an individual is judged in life, not by his/her possessions but positive contributions, to human existence.</p>
                     </div>
                     <div className="bg-gray-50 p-6 rounded-lg">
                       <h3 className="font-display text-xl font-bold text-primary mb-3">Doing it right!</h3>
