@@ -138,7 +138,7 @@ const About = () => {
                     </div>
                     <div className="bg-gray-50 p-6 rounded-lg">
                       <h3 className="font-display text-xl font-bold text-primary mb-3">Civility</h3>
-                      <p className="text-gray-700">We Encourage every individual to be humble, respectful, affectionate, and compassionate. Civility, simply expressed, is personality fully enhanced!</p>
+                      <p className="text-gray-700">We encourage every individual to be humble, respectful, affectionate, and compassionate. Civility, simply expressed, is personality fully enhanced!</p>
                     </div>
 
                   </div>
