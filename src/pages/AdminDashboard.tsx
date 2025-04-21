@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Book as BookIcon, User, LogOut, BellRing } from "lucide-react";
 import { toast } from "sonner";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import {
@@ -144,8 +144,6 @@ const AdminDashboard = () => {
     enabled: isAuthenticated,
   });
 
-  const [localAnnouncements, setLocalAnnouncements] = useState<Announcement[]>(announcements);
-
   useEffect(() => {
     // Check authentication status using local storage
     const checkAuth = async () => {
@@ -176,10 +174,6 @@ const AdminDashboard = () => {
     checkAuth();
   }, [navigate]);
 
-  useEffect(() => {
-    setLocalAnnouncements(announcements);
-  }, [announcements]);
-
   const handleLogout = async () => {
     try {
       // Try to sign out from Supabase
@@ -199,7 +193,7 @@ const AdminDashboard = () => {
     book.subject.toLowerCase().includes(searchTerm.toLowerCase())
   );
   
-  const filteredAnnouncements = localAnnouncements.filter(announcement => 
+  const filteredAnnouncements = announcements.filter(announcement => 
     announcement.title.toLowerCase().includes(announcementSearchTerm.toLowerCase()) ||
     announcement.category.toLowerCase().includes(announcementSearchTerm.toLowerCase()) ||
     announcement.description.toLowerCase().includes(announcementSearchTerm.toLowerCase())
@@ -223,77 +217,61 @@ const AdminDashboard = () => {
   };
   
   const handleAddAnnouncement = async () => {
-    if (!newAnnouncement.title || !newAnnouncement.description || !newAnnouncement.date) {
-      toast.error("Please fill all required fields");
-      return;
-    }
-    const optimisticId = Math.random().toString(36).substring(2, 15);
-    const optimisticAnnouncement: Announcement = {
-      id: optimisticId,
-      title: newAnnouncement.title,
-      description: newAnnouncement.description,
-      date: newAnnouncement.date,
-      category: newAnnouncement.category,
-      created_at: new Date().toISOString(),
-    };
-  
-    const previousAnnouncements = [...localAnnouncements];
-    setLocalAnnouncements([...previousAnnouncements, optimisticAnnouncement]);
-    setNewAnnouncement({ title: "", description: "", date: "", category: "General" });
-  
     try {
-      const createdAnnouncement = await addAnnouncement({
-        id: optimisticId,
-        title: optimisticAnnouncement.title,
-        description: optimisticAnnouncement.description,
-        date: optimisticAnnouncement.date,
-        category: optimisticAnnouncement.category
+      if (!newAnnouncement.title || !newAnnouncement.description || !newAnnouncement.date) {
+        toast.error("Please fill all required fields");
+        return;
+      }
+      
+      // Add announcement using our new function
+      await addAnnouncement({
+        title: newAnnouncement.title,
+        description: newAnnouncement.description,
+        date: newAnnouncement.date,
+        category: newAnnouncement.category
       });
-      setLocalAnnouncements(localAnnouncements.map(announcement => 
-        announcement.id === optimisticId ? createdAnnouncement : announcement
-      ));
+      
       toast.success("Announcement added successfully");
-    } catch (error: any) {
-      console.error("Error adding announcement:", error);
-      setLocalAnnouncements(previousAnnouncements);
-      toast.error(`Failed to add announcement: ${error.message}`);
-    } finally {      
+      setNewAnnouncement({
+        title: "",
+        description: "",
+        date: "",
+        category: "General"
+      });
+      
+      // Note: In a real app with a backend API, this would update the JSON file
+      // For this demo, we're just showing a success message
+      // toast.info("In a real app, this would update the JSON file on the server");
       refetchAnnouncements();
+    } catch (error) {
+      console.error("Error adding announcement:", error);
+      toast.error("Failed to add announcement");
     }
   };
   
-
   const handleUpdateAnnouncement = async () => {
     if (!editingAnnouncement) return;
-
-    const previousAnnouncements = [...localAnnouncements];
-    const updatedAnnouncements = previousAnnouncements.map((announcement) =>
-      announcement.id === editingAnnouncement.id ? editingAnnouncement : announcement
-    );
-    setLocalAnnouncements(updatedAnnouncements);
-    setEditingAnnouncement(null);
-
+    
     try {
-      await updateAnnouncement(editingAnnouncement);      
+      // Update announcement using our new function
+      await updateAnnouncement(editingAnnouncement);
+      
       toast.success("Announcement updated successfully");
-    } catch (error: any) {
-      console.error("Error updating announcement:", error);
-      setLocalAnnouncements(previousAnnouncements);
-      toast.error(`Failed to update announcement: ${error.message}`);
-    } finally {      
+      // Note: In a real app with a backend API, this would update the JSON file
+      // toast.info("In a real app, this would update the JSON file on the server");
+      setEditingAnnouncement(null);
       refetchAnnouncements();
+    } catch (error) {
+      console.error("Error updating announcement:", error);
+      toast.error("Failed to update announcement");
     }
   };
   
-
   const handleDeleteAnnouncement = async (id: string) => {
-    const previousAnnouncements = [...localAnnouncements];
-    setLocalAnnouncements(localAnnouncements.filter((announcement) => announcement.id !== id));
-
     try {
       console.log(`Attempting to delete announcement with ID: ${id}`);
       // Show loading toast
-      toast.loading("Deleting announcement...");
+      toast.loading('Deleting announcement...');
       
       // Delete announcement using our function
       await deleteAnnouncement(id);
@@ -301,15 +279,14 @@ const AdminDashboard = () => {
       // Dismiss loading toast and show success
       toast.dismiss();
       toast.success("Announcement deleted successfully");
-    } catch (error: any) {
-      console.error("Error deleting announcement:", error);      
-      setLocalAnnouncements(previousAnnouncements);
+      
+      // In production, the changes happen in GitHub, so we need to refetch
+      refetchAnnouncements();
+    } catch (error) {
+      console.error("Error deleting announcement:", error);
       toast.dismiss();
       toast.error(`Failed to delete announcement: ${error.message}`);
-    } finally {      
-      refetchAnnouncements();
     }
-  };
   };
 
   if (isLoading) {
@@ -560,7 +537,7 @@ const AdminDashboard = () => {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {filteredAnnouncements.map((announcement) =>  (
+                      {filteredAnnouncements.map((announcement) => (
                         <TableRow key={announcement.id}>
                           <TableCell className="font-medium">{announcement.title}</TableCell>
                           <TableCell>{announcement.date}</TableCell>
