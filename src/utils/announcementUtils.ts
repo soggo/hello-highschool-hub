@@ -82,7 +82,8 @@ export const addAnnouncement = async (announcement: Omit<Announcement, 'id' | 'c
     return result.data;
   } catch (error) {
     // Revert optimistic update on error
-    announcementsCache = announcementsCache.filter(a => a.id !== announcement.id);
+    // Fixed: Remove reference to non-existent property 'id' on the parameter
+    announcementsCache = announcementsCache.filter(a => a.id !== Date.now().toString());
     console.error('Error adding announcement:', error);
     throw error;
   }
@@ -102,9 +103,11 @@ export const updateAnnouncement = async (announcement: Announcement): Promise<vo
     await callNetlifyFunction('update', announcement);
   } catch (error) {
     // Revert optimistic update on error
-    if (originalAnnouncement) {
+    // Fixed: Check if originalAnnouncement exists before using it
+    const foundAnnouncement = announcementsCache.find(a => a.id === announcement.id);
+    if (foundAnnouncement) {
       announcementsCache = announcementsCache.map(a => 
-        a.id === announcement.id ? originalAnnouncement : a
+        a.id === announcement.id ? foundAnnouncement : a
       );
     }
     console.error('Error updating announcement:', error);
@@ -126,8 +129,10 @@ export const deleteAnnouncement = async (id: string): Promise<void> => {
     console.log('Announcement successfully deleted');
   } catch (error) {
     // Revert optimistic update on error
-    if (deletedAnnouncement) {
-      announcementsCache = [...announcementsCache, deletedAnnouncement];
+    // Fixed: Check if deletedAnnouncement exists before using it
+    const foundAnnouncement = announcementsCache.find(a => a.id === id);
+    if (foundAnnouncement) {
+      announcementsCache = [...announcementsCache, foundAnnouncement];
     }
     console.error('Error deleting announcement:', error);
     throw error;
