@@ -58,17 +58,29 @@ const callNetlifyFunction = async (action: string, data: any) => {
 
 export const addAnnouncement = async (announcement: Omit<Announcement, 'id' | 'created_at'>): Promise<Announcement> => {
   try {
+    // For local immediate feedback, create a temporary version with a timestamp ID
+    const tempId = Date.now().toString();
+    const tempAnnouncement: Announcement = {
+      ...announcement,
+      id: tempId,
+      created_at: new Date().toISOString()
+    };
+    
+    // Call the API
     const result = await callNetlifyFunction('create', announcement);
-    return result.data;
+    
+    // Return the server version if available, otherwise the temp version
+    return result.data || tempAnnouncement;
   } catch (error) {
     console.error('Error adding announcement:', error);
     throw error;
   }
 };
 
-export const updateAnnouncement = async (announcement: Announcement): Promise<void> => {
+export const updateAnnouncement = async (announcement: Announcement): Promise<Announcement> => {
   try {
     await callNetlifyFunction('update', announcement);
+    return announcement;
   } catch (error) {
     console.error('Error updating announcement:', error);
     throw error;
