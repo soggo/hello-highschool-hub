@@ -27,7 +27,7 @@ const Announcements = () => {
 
     fetchAnnouncements();
     
-    // Check for updates every 30 seconds
+    // Check for updates every hour (3600000ms)
     const pollingInterval = setInterval(() => {
       fetchAnnouncements();
     }, 3600000);

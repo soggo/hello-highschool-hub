@@ -10,12 +10,15 @@ export type Announcement = {
   created_at: string;
 };
 
-export const getAnnouncements = (): Promise<Announcement[]> => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve(announcements as Announcement[]);
-    }, 300);
-  });
+// Cache for optimistic updates
+let announcementsCache: Announcement[] = [];
+
+export const getAnnouncements = async (): Promise<Announcement[]> => {
+  // Initialize cache if empty
+  if (announcementsCache.length === 0) {
+    announcementsCache = [...announcements];
+  }
+  return Promise.resolve(announcementsCache);
 };
 
 const callNetlifyFunction = async (action: string, data: any) => {
@@ -58,9 +61,28 @@ const callNetlifyFunction = async (action: string, data: any) => {
 
 export const addAnnouncement = async (announcement: Omit<Announcement, 'id' | 'created_at'>): Promise<Announcement> => {
   try {
+    // Create optimistic announcement
+    const optimisticAnnouncement: Announcement = {
+      ...announcement,
+      id: Date.now().toString(),
+      created_at: new Date().toISOString()
+    };
+
+    // Update cache optimistically
+    announcementsCache = [optimisticAnnouncement, ...announcementsCache];
+
+    // Make actual API call
     const result = await callNetlifyFunction('create', announcement);
+    
+    // Update cache with real data
+    announcementsCache = announcementsCache.map(a => 
+      a.id === optimisticAnnouncement.id ? result.data : a
+    );
+
     return result.data;
   } catch (error) {
+    // Revert optimistic update on error
+    announcementsCache = announcementsCache.filter(a => a.id !== announcement.id);
     console.error('Error adding announcement:', error);
     throw error;
   }
@@ -68,8 +90,23 @@ export const addAnnouncement = async (announcement: Omit<Announcement, 'id' | 'c
 
 export const updateAnnouncement = async (announcement: Announcement): Promise<void> => {
   try {
+    // Store original announcement for rollback
+    const originalAnnouncement = announcementsCache.find(a => a.id === announcement.id);
+    
+    // Update cache optimistically
+    announcementsCache = announcementsCache.map(a => 
+      a.id === announcement.id ? announcement : a
+    );
+
+    // Make actual API call
     await callNetlifyFunction('update', announcement);
   } catch (error) {
+    // Revert optimistic update on error
+    if (originalAnnouncement) {
+      announcementsCache = announcementsCache.map(a => 
+        a.id === announcement.id ? originalAnnouncement : a
+      );
+    }
     console.error('Error updating announcement:', error);
     throw error;
   }
@@ -77,10 +114,21 @@ export const updateAnnouncement = async (announcement: Announcement): Promise<vo
 
 export const deleteAnnouncement = async (id: string): Promise<void> => {
   try {
-    console.log('Deleting announcement with ID:', id);
+    // Store original announcement for rollback
+    const deletedAnnouncement = announcementsCache.find(a => a.id === id);
+    
+    // Update cache optimistically
+    announcementsCache = announcementsCache.filter(a => a.id !== id);
+
+    // Make actual API call
     await callNetlifyFunction('delete', { id });
+    
     console.log('Announcement successfully deleted');
   } catch (error) {
+    // Revert optimistic update on error
+    if (deletedAnnouncement) {
+      announcementsCache = [...announcementsCache, deletedAnnouncement];
+    }
     console.error('Error deleting announcement:', error);
     throw error;
   }

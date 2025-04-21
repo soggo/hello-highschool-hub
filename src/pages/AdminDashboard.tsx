@@ -249,23 +249,21 @@ const AdminDashboard = () => {
     }
   };
   
-  const handleUpdateAnnouncement = async () => {
-    if (!editingAnnouncement) return;
+const handleUpdateAnnouncement = async () => {
+  if (!editingAnnouncement) return;
+  
+  try {
+    // Update announcement using our new function
+    await updateAnnouncement(editingAnnouncement);
     
-    try {
-      // Update announcement using our new function
-      await updateAnnouncement(editingAnnouncement);
-      
-      toast.success("Announcement updated successfully");
-      // Note: In a real app with a backend API, this would update the JSON file
-      // toast.info("In a real app, this would update the JSON file on the server");
-      setEditingAnnouncement(null);
-      refetchAnnouncements();
-    } catch (error) {
-      console.error("Error updating announcement:", error);
-      toast.error("Failed to update announcement");
-    }
-  };
+    toast.success("Announcement updated successfully");
+    setEditingAnnouncement(null);
+    refetchAnnouncements();
+  } catch (error) {
+    console.error("Error updating announcement:", error);
+    toast.error("Failed to update announcement");
+  }
+};
   
   const handleDeleteAnnouncement = async (id: string) => {
     try {
