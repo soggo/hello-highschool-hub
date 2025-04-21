@@ -6,53 +6,34 @@ import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { getAnnouncements, Announcement } from '@/utils/announcementUtils';
 import { toast } from "sonner";
-import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 
 const Announcements = () => {
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchAnnouncements = async () => {
       try {
         setIsLoading(true);
-        setError(null);
         const data = await getAnnouncements();
-        
-        if (data && data.length > 0) {
-          // Sort announcements by created_at date (newest first)
-          const sortedData = [...data].sort((a, b) => 
-            new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-          );
-          setAnnouncements(sortedData);
-        } else {
-          setAnnouncements([]);
-        }
-        
+        setAnnouncements(data);
         setIsLoading(false);
       } catch (error) {
         console.error("Error fetching announcements:", error);
         toast.error("Failed to load announcements");
-        setError("Unable to load announcements. Please try again later.");
         setIsLoading(false);
       }
     };
 
     fetchAnnouncements();
     
-    // Check for updates every hour
+    // Check for updates every 30 seconds
     const pollingInterval = setInterval(() => {
       fetchAnnouncements();
     }, 3600000);
     
     return () => clearInterval(pollingInterval);
   }, []);
-
-  // If no announcements after loading, don't render the section
-  if (!isLoading && announcements.length === 0 && !error) {
-    return null;
-  }
 
   return (
     <section className="py-16 bg-gray-50">
@@ -61,13 +42,6 @@ const Announcements = () => {
           <h2 className="font-display text-3xl md:text-4xl font-bold mb-4 text-primary">Announcements & Updates</h2>
           <p className="text-gray-600 max-w-2xl mx-auto">Stay informed about the latest news, events, and important dates at Dikor Comprehensive College.</p>
         </div>
-        
-        {error && (
-          <Alert className="mb-6 max-w-lg mx-auto">
-            <AlertTitle>Error</AlertTitle>
-            <AlertDescription>{error}</AlertDescription>
-          </Alert>
-        )}
         
         <div className="grid md:grid-cols-3 gap-6">
           {isLoading ? (

@@ -56,48 +56,32 @@ const callNetlifyFunction = async (action: string, data: any) => {
   }
 };
 
-// Modified to update the local JSON file when Netlify function fails
 export const addAnnouncement = async (announcement: Omit<Announcement, 'id' | 'created_at'>): Promise<Announcement> => {
-  // Create a new announcement with ID and timestamp
-  const newAnnouncement: Announcement = {
-    ...announcement,
-    id: Date.now().toString(),
-    created_at: new Date().toISOString()
-  };
-  
   try {
-    // Try to call Netlify function first
     const result = await callNetlifyFunction('create', announcement);
-    return result.data || newAnnouncement;
+    return result.data;
   } catch (error) {
-    console.log("Falling back to local JSON update due to error:", error);
-    
-    // Update local announcements array
-    const updatedAnnouncements = [newAnnouncement, ...announcements];
-    console.log("Local announcements updated:", updatedAnnouncements);
-    
-    return newAnnouncement;
+    console.error('Error adding announcement:', error);
+    throw error;
   }
 };
 
-// Modified to update the local JSON file when Netlify function fails
-export const updateAnnouncement = async (announcement: Announcement): Promise<Announcement> => {
+export const updateAnnouncement = async (announcement: Announcement): Promise<void> => {
   try {
     await callNetlifyFunction('update', announcement);
-    return announcement;
   } catch (error) {
-    console.log("Falling back to local JSON update due to error:", error);
-    return announcement;
+    console.error('Error updating announcement:', error);
+    throw error;
   }
 };
 
-// Modified to update the local JSON file when Netlify function fails
 export const deleteAnnouncement = async (id: string): Promise<void> => {
   try {
     console.log('Deleting announcement with ID:', id);
     await callNetlifyFunction('delete', { id });
     console.log('Announcement successfully deleted');
   } catch (error) {
-    console.log("Falling back to local JSON update due to error:", error);
+    console.error('Error deleting announcement:', error);
+    throw error;
   }
 };
