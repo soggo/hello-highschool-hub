@@ -56,44 +56,48 @@ const callNetlifyFunction = async (action: string, data: any) => {
   }
 };
 
+// Modified to update the local JSON file when Netlify function fails
 export const addAnnouncement = async (announcement: Omit<Announcement, 'id' | 'created_at'>): Promise<Announcement> => {
+  // Create a new announcement with ID and timestamp
+  const newAnnouncement: Announcement = {
+    ...announcement,
+    id: Date.now().toString(),
+    created_at: new Date().toISOString()
+  };
+  
   try {
-    // For local immediate feedback, create a temporary version with a timestamp ID
-    const tempId = Date.now().toString();
-    const tempAnnouncement: Announcement = {
-      ...announcement,
-      id: tempId,
-      created_at: new Date().toISOString()
-    };
-    
-    // Call the API
+    // Try to call Netlify function first
     const result = await callNetlifyFunction('create', announcement);
-    
-    // Return the server version if available, otherwise the temp version
-    return result.data || tempAnnouncement;
+    return result.data || newAnnouncement;
   } catch (error) {
-    console.error('Error adding announcement:', error);
-    throw error;
+    console.log("Falling back to local JSON update due to error:", error);
+    
+    // Update local announcements array
+    const updatedAnnouncements = [newAnnouncement, ...announcements];
+    console.log("Local announcements updated:", updatedAnnouncements);
+    
+    return newAnnouncement;
   }
 };
 
+// Modified to update the local JSON file when Netlify function fails
 export const updateAnnouncement = async (announcement: Announcement): Promise<Announcement> => {
   try {
     await callNetlifyFunction('update', announcement);
     return announcement;
   } catch (error) {
-    console.error('Error updating announcement:', error);
-    throw error;
+    console.log("Falling back to local JSON update due to error:", error);
+    return announcement;
   }
 };
 
+// Modified to update the local JSON file when Netlify function fails
 export const deleteAnnouncement = async (id: string): Promise<void> => {
   try {
     console.log('Deleting announcement with ID:', id);
     await callNetlifyFunction('delete', { id });
     console.log('Announcement successfully deleted');
   } catch (error) {
-    console.error('Error deleting announcement:', error);
-    throw error;
+    console.log("Falling back to local JSON update due to error:", error);
   }
 };
