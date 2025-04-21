@@ -145,7 +145,6 @@ const AdminDashboard = () => {
   });
 
   const [localAnnouncements, setLocalAnnouncements] = useState<Announcement[]>(announcements);
-  const queryClient = useQueryClient();
 
   useEffect(() => {
     // Check authentication status using local storage
@@ -176,6 +175,10 @@ const AdminDashboard = () => {
     
     checkAuth();
   }, [navigate]);
+
+  useEffect(() => {
+    setLocalAnnouncements(announcements);
+  }, [announcements]);
 
   const handleLogout = async () => {
     try {
@@ -218,7 +221,7 @@ const AdminDashboard = () => {
       toast.error("Failed to delete book");
     }
   };
-
+  
   const handleAddAnnouncement = async () => {
     if (!newAnnouncement.title || !newAnnouncement.description || !newAnnouncement.date) {
       toast.error("Please fill all required fields");
@@ -233,17 +236,18 @@ const AdminDashboard = () => {
       category: newAnnouncement.category,
       created_at: new Date().toISOString(),
     };
-
+  
     const previousAnnouncements = [...localAnnouncements];
     setLocalAnnouncements([...previousAnnouncements, optimisticAnnouncement]);
     setNewAnnouncement({ title: "", description: "", date: "", category: "General" });
-
+  
     try {
       const createdAnnouncement = await addAnnouncement({
+        id: optimisticId,
         title: optimisticAnnouncement.title,
         description: optimisticAnnouncement.description,
         date: optimisticAnnouncement.date,
-        category: optimisticAnnouncement.category,
+        category: optimisticAnnouncement.category
       });
       setLocalAnnouncements(localAnnouncements.map(announcement => 
         announcement.id === optimisticId ? createdAnnouncement : announcement
@@ -253,10 +257,11 @@ const AdminDashboard = () => {
       console.error("Error adding announcement:", error);
       setLocalAnnouncements(previousAnnouncements);
       toast.error(`Failed to add announcement: ${error.message}`);
-    } finally {
-      queryClient.invalidateQueries(["admin-announcements"]);
+    } finally {      
+      refetchAnnouncements();
     }
   };
+  
 
   const handleUpdateAnnouncement = async () => {
     if (!editingAnnouncement) return;
@@ -275,10 +280,11 @@ const AdminDashboard = () => {
       console.error("Error updating announcement:", error);
       setLocalAnnouncements(previousAnnouncements);
       toast.error(`Failed to update announcement: ${error.message}`);
-    } finally {
-      queryClient.invalidateQueries(["admin-announcements"]);
+    } finally {      
+      refetchAnnouncements();
     }
   };
+  
 
   const handleDeleteAnnouncement = async (id: string) => {
     const previousAnnouncements = [...localAnnouncements];
@@ -300,9 +306,10 @@ const AdminDashboard = () => {
       setLocalAnnouncements(previousAnnouncements);
       toast.dismiss();
       toast.error(`Failed to delete announcement: ${error.message}`);
-    } finally {
-      queryClient.invalidateQueries(["admin-announcements"]);
+    } finally {      
+      refetchAnnouncements();
     }
+  };
   };
 
   if (isLoading) {
