@@ -57,7 +57,7 @@ const About = () => {
               >
                 <TabsList className="grid w-full grid-cols-3 mb-8 text-black">
                   <TabsTrigger value="history">Our Story</TabsTrigger>
-                  <TabsTrigger value="mission">Mission & Vision</TabsTrigger>
+                  <TabsTrigger value="mission">Vision & Mission </TabsTrigger>
                   <TabsTrigger value="staff">Leadership 
                     {/* & Staff */}
                     </TabsTrigger>
@@ -121,7 +121,7 @@ const About = () => {
                   <div className="grid md:grid-cols-2 gap-6">
                     <div className="bg-gray-50 p-6 rounded-lg">
                       <h3 className="font-display text-xl font-bold text-primary mb-3">Discipline</h3>
-                      <p className="text-gray-700">Discipline, which is habit of obedience, is the First Law in Heaven! A disciplined person is destined to rule the world. We do not compromise on Discipline!</p>
+                      <p className="text-gray-700">Discipline, which is habit of obedience, is the first law in Heaven! A disciplined person is destined to rule the world. We do not compromise on discipline!</p>
                     </div>
 
                     <div className="bg-gray-50 p-6 rounded-lg">
