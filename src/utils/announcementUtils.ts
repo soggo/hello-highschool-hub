@@ -1,4 +1,3 @@
-
 import announcements from '../data/announcements.json';
 
 export type Announcement = {
@@ -13,12 +12,61 @@ export type Announcement = {
 // Cache for optimistic updates
 let announcementsCache: Announcement[] = [];
 
+// Helper function to convert date strings to Date objects for sorting
+const parseAnnouncementDate = (dateStr: string): Date => {
+  try {
+    // Try to parse the date using Date.parse
+    const parsed = Date.parse(dateStr);
+    if (!isNaN(parsed)) {
+      return new Date(parsed);
+    }
+    
+    // If standard parsing fails, try to handle format like "April 28, 2025"
+    const months: { [key: string]: number } = {
+      january: 0, february: 1, march: 2, april: 3, may: 4, june: 5,
+      july: 6, august: 7, september: 8, october: 9, november: 10, december: 11
+    };
+    
+    const parts = dateStr.toLowerCase().split(' ');
+    if (parts.length >= 2) {
+      const month = months[parts[0].toLowerCase()];
+      if (month !== undefined) {
+        // Extract day and year
+        const day = parseInt(parts[1].replace(',', ''));
+        const year = parts.length > 2 ? parseInt(parts[2]) : new Date().getFullYear();
+        
+        if (!isNaN(day) && !isNaN(year)) {
+          return new Date(year, month, day);
+        }
+      }
+    }
+    
+    // If all parsing attempts fail, return a default date
+    console.warn(`Failed to parse date: ${dateStr}, using current date instead`);
+    return new Date();
+  } catch (error) {
+    console.error(`Error parsing date: ${dateStr}`, error);
+    return new Date();
+  }
+};
+
+// Sort announcements by date (earliest to latest)
+const sortAnnouncementsByDate = (announcements: Announcement[]): Announcement[] => {
+  return [...announcements].sort((a, b) => {
+    const dateA = parseAnnouncementDate(a.date);
+    const dateB = parseAnnouncementDate(b.date);
+    return dateA.getTime() - dateB.getTime();
+  });
+};
+
 export const getAnnouncements = async (): Promise<Announcement[]> => {
   // Initialize cache if empty
   if (announcementsCache.length === 0) {
     announcementsCache = [...announcements];
   }
-  return Promise.resolve(announcementsCache);
+  
+  // Sort announcements by date before returning
+  return Promise.resolve(sortAnnouncementsByDate(announcementsCache));
 };
 
 const callNetlifyFunction = async (action: string, data: any) => {
