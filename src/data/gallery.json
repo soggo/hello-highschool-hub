@@ -1,0 +1,31 @@
+
+[
+  {
+    "id": "1",
+    "title": "School Building",
+    "description": "Front view of the school building",
+    "imageUrl": "/dikorsal.jpeg",
+    "created_at": "2025-04-01T10:00:00Z"
+  },
+  {
+    "id": "2",
+    "title": "Science Laboratory",
+    "description": "Students in the science lab",
+    "imageUrl": "/dikorlab2.jpeg",
+    "created_at": "2025-04-02T11:30:00Z"
+  },
+  {
+    "id": "3",
+    "title": "School Celebration",
+    "description": "Students and staff during the annual celebration",
+    "imageUrl": "/dikorceleb.jpeg",
+    "created_at": "2025-04-03T09:15:00Z"
+  },
+  {
+    "id": "4",
+    "title": "Assembly Hall",
+    "description": "Students gathered in the assembly hall",
+    "imageUrl": "/dikorsal1.jpeg",
+    "created_at": "2025-04-04T14:20:00Z"
+  }
+]

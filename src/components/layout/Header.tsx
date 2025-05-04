@@ -1,7 +1,7 @@
 
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Menu, X, Book, Calendar, GraduationCap, Phone, LogIn } from 'lucide-react';
+import { Menu, X, Book, Calendar, GraduationCap, Phone, LogIn, Image } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const Header = () => {
@@ -28,6 +28,9 @@ const Header = () => {
           </Link>
           <Link to="/about" className="font-medium hover:text-black transition-colors">
             About
+          </Link>
+          <Link to="/gallery" className="font-medium hover:text-black transition-colors">
+            Gallery
           </Link>
           <Link to="/elearning" className="font-medium hover:text-black transition-colors">
             E-Learning
@@ -74,6 +77,14 @@ const Header = () => {
             >
               <Book className="h-5 w-5" />
               About
+            </Link>
+            <Link
+              to="/gallery"
+              className="flex items-center gap-2 py-2 px-3 hover:bg-gray-50 rounded-md"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              <Image className="h-5 w-5" />
+              Gallery
             </Link>
             <Link
               to="/elearning"
