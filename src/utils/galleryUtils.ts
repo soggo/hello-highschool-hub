@@ -64,6 +64,8 @@ const callNetlifyFunction = async (action: string, data: any) => {
 // Upload an image file and get back the path
 export const uploadGalleryImage = async (file: File): Promise<{path: string}> => {
   try {
+    console.log('Uploading file:', file.name, 'size:', file.size);
+    
     // Create a FormData object to send the file
     const formData = new FormData();
     formData.append('file', file);
@@ -77,10 +79,12 @@ export const uploadGalleryImage = async (file: File): Promise<{path: string}> =>
     
     if (!response.ok) {
       const errorText = await response.text();
+      console.error('Upload error response:', errorText);
       throw new Error(errorText || 'Failed to upload image');
     }
     
     const result = await response.json();
+    console.log('Upload result:', result);
     return { path: result.path };
   } catch (error) {
     console.error('Error uploading image:', error);

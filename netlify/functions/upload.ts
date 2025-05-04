@@ -7,7 +7,6 @@ import * as path from 'path';
 import * as os from 'os';
 import * as crypto from 'crypto';
 import * as multiparty from 'multiparty';
-import * as util from 'util';
 
 export default async (req: Request, context: Context) => {
   // Only accept POST requests
@@ -17,20 +16,21 @@ export default async (req: Request, context: Context) => {
 
   try {
     // Parse the multipart/form-data for file upload
-    const { fields, files } = await parseFormData(req);
+    const formData = await req.formData();
+    const file = formData.get('file') as File;
     
-    if (!files.file || !files.file[0]) {
+    if (!file) {
       return new Response("No file uploaded", { status: 400 });
     }
 
-    const file = files.file[0];
-    const folder = fields.folder?.[0] || '';
-
-    // Generate a unique filename to avoid collisions
-    const fileName = generateUniqueFileName(file.originalFilename || 'image');
+    const folder = formData.get('folder') as string || '';
     
-    // Read file as buffer
-    const fileBuffer = fs.readFileSync(file.path);
+    // Generate a unique filename to avoid collisions
+    const fileName = generateUniqueFileName(file.name || 'image');
+    
+    // Convert file to buffer
+    const fileArrayBuffer = await file.arrayBuffer();
+    const fileBuffer = Buffer.from(fileArrayBuffer);
     
     // Convert to base64 for GitHub API
     const fileContent = fileBuffer.toString('base64');
@@ -91,52 +91,6 @@ export default async (req: Request, context: Context) => {
     );
   }
 };
-
-// Helper function to parse multipart form data
-async function parseFormData(request: Request): Promise<{fields: any, files: any}> {
-  // Create a temporary directory for files
-  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'upload-'));
-  
-  // Get the request body as a buffer
-  const buffer = await request.arrayBuffer();
-  const bodyBuffer = Buffer.from(buffer);
-  
-  // Write the body to a temporary file
-  const tempFilePath = path.join(tempDir, 'upload-body');
-  fs.writeFileSync(tempFilePath, bodyBuffer);
-  
-  // Create a readable stream from the file
-  const fileStream = createReadStream(tempFilePath);
-  
-  return new Promise((resolve, reject) => {
-    const form = new multiparty.Form({
-      uploadDir: tempDir,
-      autoFiles: true,
-    });
-    
-    form.parse(fileStream, function(err: any, fields: any, files: any) {
-      if (err) {
-        reject(err);
-        return;
-      }
-      
-      // Need to reformat the Content-Type header for multiparty
-      const contentType = request.headers.get('content-type');
-      if (contentType) {
-        fileStream.headers = { 'content-type': contentType };
-      }
-      
-      resolve({ fields, files });
-      
-      // Clean up temp files
-      try {
-        fs.unlinkSync(tempFilePath);
-      } catch (e) {
-        console.error("Error cleaning up temp file:", e);
-      }
-    });
-  });
-}
 
 // Helper function to generate a unique filename
 function generateUniqueFileName(originalName: string): string {
