@@ -13,9 +13,16 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
+import {
+  Dialog,
+  DialogContent,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 const Gallery = () => {
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedImage, setSelectedImage] = useState<GalleryImage | null>(null);
 
   const { data: images = [], isLoading } = useQuery({
     queryKey: ["gallery-images"],
@@ -73,11 +80,11 @@ const Gallery = () => {
                     <CarouselItem key={image.id}>
                       <div className="p-1">
                         <Card>
-                          <CardContent className="flex aspect-video items-center justify-center p-0 relative">
+                          <CardContent className="flex items-center justify-center p-0 relative">
                             <img
                               src={image.imageUrl}
                               alt={image.title}
-                              className="w-full h-full object-cover rounded-md"
+                              className="w-full h-auto rounded-md"
                             />
                             <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-60 p-4 text-white">
                               <h3 className="font-medium">{image.title}</h3>
@@ -97,23 +104,36 @@ const Gallery = () => {
             {/* Gallery grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredImages.map((image) => (
-                <Card key={image.id} className="overflow-hidden hover:shadow-lg transition-shadow">
-                  <CardContent className="p-0">
-                    <div className="aspect-video relative">
-                      <img
-                        src={image.imageUrl}
-                        alt={image.title}
-                        className="w-full h-full object-cover"
-                      />
-                      <div className="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-30 transition-opacity flex items-end">
-                        <div className="p-4 text-white w-full bg-gradient-to-t from-black/80 to-transparent">
-                          <h3 className="font-medium text-lg">{image.title}</h3>
-                          <p className="text-sm text-gray-200">{image.description}</p>
+                <Dialog key={image.id}>
+                  <DialogTrigger asChild>
+                    <Card className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer">
+                      <CardContent className="p-0">
+                        <div className="relative">
+                          <AspectRatio ratio={16 / 9}>
+                            <img
+                              src={image.imageUrl}
+                              alt={image.title}
+                              className="w-full h-full object-cover"
+                            />
+                          </AspectRatio>
+                          <div className="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-30 transition-opacity flex items-end">
+                            <div className="p-4 text-white w-full bg-gradient-to-t from-black/80 to-transparent">
+                              <h3 className="font-medium text-lg">{image.title}</h3>
+                              <p className="text-sm text-gray-200">{image.description}</p>
+                            </div>
+                          </div>
                         </div>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
+                      </CardContent>
+                    </Card>
+                  </DialogTrigger>
+                  <DialogContent className="max-w-4xl w-full p-1">
+                    <img
+                      src={image.imageUrl}
+                      alt={image.title}
+                      className="w-full h-auto"
+                    />
+                  </DialogContent>
+                </Dialog>
               ))}
             </div>
           </>
@@ -124,3 +144,4 @@ const Gallery = () => {
 };
 
 export default Gallery;
+

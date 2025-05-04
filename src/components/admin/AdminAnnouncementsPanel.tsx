@@ -1,6 +1,6 @@
-
 import { useState } from "react";
 import { toast } from "sonner";
+import { useQuery } from "@tanstack/react-query";
 import {
   Table,
   TableBody,
@@ -24,71 +24,60 @@ import {
   DialogTitle,
   DialogDescription,
   DialogFooter,
-  DialogClose,
+  DialogTrigger,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { 
-  Announcement,
+import {
+  getAnnouncements,
   addAnnouncement,
-  updateAnnouncement,
   deleteAnnouncement,
+  Announcement,
 } from "@/utils/announcementUtils";
+import { Plus, Edit, Trash2 } from "lucide-react";
 
-interface AdminAnnouncementsPanelProps {
-  announcements: Announcement[];
-  isLoading: boolean;
-  searchTerm: string;
-  setSearchTerm: (value: string) => void;
-  refetchAnnouncements: () => void;
-}
-
-const AdminAnnouncementsPanel = ({ 
-  announcements, 
-  isLoading, 
-  searchTerm, 
-  setSearchTerm,
-  refetchAnnouncements 
-}: AdminAnnouncementsPanelProps) => {
+const AdminAnnouncementsPanel = () => {
+  const [searchTerm, setSearchTerm] = useState("");
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [newAnnouncement, setNewAnnouncement] = useState({
     title: "",
-    description: "",
-    date: "",
-    category: "General"
+    content: "",
   });
-  
-  const [editingAnnouncement, setEditingAnnouncement] = useState<Announcement | null>(null);
-  
-  const filteredAnnouncements = announcements.filter(announcement => 
-    announcement.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    announcement.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    announcement.description.toLowerCase().includes(searchTerm.toLowerCase())
+
+  // Fetch announcements
+  const {
+    data: announcements = [],
+    isLoading,
+    refetch: refetchAnnouncements,
+  } = useQuery({
+    queryKey: ["admin-announcements"],
+    queryFn: getAnnouncements,
+  });
+
+  const filteredAnnouncements = announcements.filter(
+    (announcement) =>
+      announcement.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      announcement.content.toLowerCase().includes(searchTerm.toLowerCase())
   );
-  
+
   const handleAddAnnouncement = async () => {
     try {
-      if (!newAnnouncement.title || !newAnnouncement.description || !newAnnouncement.date) {
+      if (!newAnnouncement.title || !newAnnouncement.content) {
         toast.error("Please fill all required fields");
         return;
       }
-      
+
       await addAnnouncement({
         title: newAnnouncement.title,
-        description: newAnnouncement.description,
-        date: newAnnouncement.date,
-        category: newAnnouncement.category
+        content: newAnnouncement.content,
       });
-      
+
       toast.success("Announcement added successfully");
       setNewAnnouncement({
         title: "",
-        description: "",
-        date: "",
-        category: "General"
+        content: "",
       });
-      
+
       setIsAddDialogOpen(false);
       refetchAnnouncements();
     } catch (error) {
@@ -96,35 +85,16 @@ const AdminAnnouncementsPanel = ({
       toast.error("Failed to add announcement");
     }
   };
-  
-  const handleUpdateAnnouncement = async (close: () => void) => {
-    if (!editingAnnouncement) return;
-    
-    try {
-      await updateAnnouncement(editingAnnouncement);
-      
-      close();
-      
-      setEditingAnnouncement(null);
-      
-      toast.success("Announcement updated successfully");
-      
-      refetchAnnouncements();
-    } catch (error) {
-      console.error("Error updating announcement:", error);
-      toast.error("Failed to update announcement");
-    }
-  };
-    
+
   const handleDeleteAnnouncement = async (id: string) => {
     try {
-      toast.loading('Deleting announcement...');
-      
+      toast.loading("Deleting announcement...");
+
       await deleteAnnouncement(id);
-      
+
       toast.dismiss();
       toast.success("Announcement deleted successfully");
-      
+
       refetchAnnouncements();
     } catch (error) {
       console.error("Error deleting announcement:", error);
@@ -140,26 +110,29 @@ const AdminAnnouncementsPanel = ({
           <CardTitle>Manage Announcements</CardTitle>
           <div className="flex gap-4">
             <div className="w-64">
-              <Input 
-                type="text" 
-                placeholder="Search..." 
+              <Input
+                type="text"
+                placeholder="Search announcements..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
-            
+
             <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
-              <Button onClick={() => setIsAddDialogOpen(true)}>
-                Add Announcement
-              </Button>
+              <DialogTrigger asChild>
+                <Button>
+                  <Plus className="mr-2 h-4 w-4" />
+                  Add Announcement
+                </Button>
+              </DialogTrigger>
               <DialogContent>
                 <DialogHeader>
                   <DialogTitle>Add New Announcement</DialogTitle>
                   <DialogDescription>
-                    Create a new announcement to be displayed on the school website.
+                    Add a new announcement to the school website.
                   </DialogDescription>
                 </DialogHeader>
-                
+
                 <div className="grid gap-4 py-4">
                   <div className="grid gap-2">
                     <Label htmlFor="title">Title</Label>
@@ -167,52 +140,32 @@ const AdminAnnouncementsPanel = ({
                       id="title"
                       placeholder="Enter announcement title"
                       value={newAnnouncement.title}
-                      onChange={(e) => setNewAnnouncement({...newAnnouncement, title: e.target.value})}
+                      onChange={(e) =>
+                        setNewAnnouncement({
+                          ...newAnnouncement,
+                          title: e.target.value,
+                        })
+                      }
                     />
                   </div>
-                  
+
                   <div className="grid gap-2">
-                    <Label htmlFor="date">Date</Label>
-                    <Input
-                      id="date"
-                      placeholder="e.g., March 28, 2025"
-                      value={newAnnouncement.date}
-                      onChange={(e) => setNewAnnouncement({...newAnnouncement, date: e.target.value})}
-                    />
-                  </div>
-                  
-                  <div className="grid gap-2">
-                    <Label htmlFor="category">Category</Label>
-                    <Select
-                      value={newAnnouncement.category}
-                      onValueChange={(value) => setNewAnnouncement({...newAnnouncement, category: value})}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select a category" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="General">General</SelectItem>
-                        <SelectItem value="Academic">Academic</SelectItem>
-                        <SelectItem value="Sports">Sports</SelectItem>
-                        <SelectItem value="Holiday">Holiday</SelectItem>
-                        <SelectItem value="Admissions">Admissions</SelectItem>
-                        <SelectItem value="Event">Event</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  
-                  <div className="grid gap-2">
-                    <Label htmlFor="description">Description</Label>
+                    <Label htmlFor="content">Content</Label>
                     <Textarea
-                      id="description"
-                      placeholder="Enter announcement details"
-                      rows={4}
-                      value={newAnnouncement.description}
-                      onChange={(e) => setNewAnnouncement({...newAnnouncement, description: e.target.value})}
+                      id="content"
+                      placeholder="Enter announcement content"
+                      rows={3}
+                      value={newAnnouncement.content}
+                      onChange={(e) =>
+                        setNewAnnouncement({
+                          ...newAnnouncement,
+                          content: e.target.value,
+                        })
+                      }
                     />
                   </div>
                 </div>
-                
+
                 <DialogFooter>
                   <Button onClick={handleAddAnnouncement}>
                     Add Announcement
@@ -233,9 +186,7 @@ const AdminAnnouncementsPanel = ({
             <TableHeader>
               <TableRow>
                 <TableHead>Title</TableHead>
-                <TableHead>Date</TableHead>
-                <TableHead>Category</TableHead>
-                <TableHead>Created</TableHead>
+                <TableHead>Content</TableHead>
                 <TableHead>Actions</TableHead>
               </TableRow>
             </TableHeader>
@@ -243,112 +194,34 @@ const AdminAnnouncementsPanel = ({
               {filteredAnnouncements.map((announcement) => (
                 <TableRow key={announcement.id}>
                   <TableCell className="font-medium">{announcement.title}</TableCell>
-                  <TableCell>{announcement.date}</TableCell>
-                  <TableCell>{announcement.category}</TableCell>
-                  <TableCell>{new Date(announcement.created_at).toLocaleDateString()}</TableCell>
+                  <TableCell className="max-w-xs truncate">{announcement.content}</TableCell>
                   <TableCell>
-                    <div className="flex space-x-2">
+                    <div className="flex gap-2">
                       <Dialog>
                         <DialogTrigger asChild>
-                          <Button 
-                            size="sm" 
-                            variant="outline"
-                            onClick={() => setEditingAnnouncement(announcement)}
-                          >
-                            Edit
+                          <Button size="sm" variant="outline">
+                            View
                           </Button>
                         </DialogTrigger>
                         <DialogContent>
                           <DialogHeader>
-                            <DialogTitle>Edit Announcement</DialogTitle>
+                            <DialogTitle>{announcement.title}</DialogTitle>
                             <DialogDescription>
-                              Make changes to the announcement.
+                              Full content of the announcement.
                             </DialogDescription>
                           </DialogHeader>
-                          
-                          {editingAnnouncement && (
-                            <div className="grid gap-4 py-4">
-                              <div className="grid gap-2">
-                                <Label htmlFor="edit-title">Title</Label>
-                                <Input
-                                  id="edit-title"
-                                  value={editingAnnouncement.title}
-                                  onChange={(e) => setEditingAnnouncement({
-                                    ...editingAnnouncement,
-                                    title: e.target.value
-                                  })}
-                                />
-                              </div>
-                              
-                              <div className="grid gap-2">
-                                <Label htmlFor="edit-date">Date</Label>
-                                <Input
-                                  id="edit-date"
-                                  value={editingAnnouncement.date}
-                                  onChange={(e) => setEditingAnnouncement({
-                                    ...editingAnnouncement,
-                                    date: e.target.value
-                                  })}
-                                />
-                              </div>
-                              
-                              <div className="grid gap-2">
-                                <Label htmlFor="edit-category">Category</Label>
-                                <Select
-                                  value={editingAnnouncement.category}
-                                  onValueChange={(value) => setEditingAnnouncement({
-                                    ...editingAnnouncement,
-                                    category: value
-                                  })}
-                                >
-                                  <SelectTrigger>
-                                    <SelectValue placeholder="Select a category" />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    <SelectItem value="General">General</SelectItem>
-                                    <SelectItem value="Academic">Academic</SelectItem>
-                                    <SelectItem value="Sports">Sports</SelectItem>
-                                    <SelectItem value="Holiday">Holiday</SelectItem>
-                                    <SelectItem value="Admissions">Admissions</SelectItem>
-                                    <SelectItem value="Event">Event</SelectItem>
-                                  </SelectContent>
-                                </Select>
-                              </div>
-                              
-                              <div className="grid gap-2">
-                                <Label htmlFor="edit-description">Description</Label>
-                                <Textarea
-                                  id="edit-description"
-                                  rows={4}
-                                  value={editingAnnouncement.description}
-                                  onChange={(e) => setEditingAnnouncement({
-                                    ...editingAnnouncement,
-                                    description: e.target.value
-                                  })}
-                                />
-                              </div>
-                            </div>
-                          )}
-                          
-                          <DialogFooter>
-                            <DialogClose asChild>
-                              <Button 
-                                onClick={() => handleUpdateAnnouncement(() => {})}
-                                type="button"
-                              >
-                                Save Changes
-                              </Button>
-                            </DialogClose>
-                          </DialogFooter>
+                          <div className="py-4">
+                            <p>{announcement.content}</p>
+                          </div>
                         </DialogContent>
                       </Dialog>
-                      
-                      <Button 
-                        size="sm" 
-                        variant="outline" 
+                      <Button
+                        size="sm"
+                        variant="outline"
                         className="text-red-500"
                         onClick={() => handleDeleteAnnouncement(announcement.id)}
                       >
+                        <Trash2 className="h-4 w-4 mr-1" />
                         Delete
                       </Button>
                     </div>

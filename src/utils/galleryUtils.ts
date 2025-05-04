@@ -61,6 +61,33 @@ const callNetlifyFunction = async (action: string, data: any) => {
   }
 };
 
+// Upload an image file and get back the path
+export const uploadGalleryImage = async (file: File): Promise<{path: string}> => {
+  try {
+    // Create a FormData object to send the file
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('folder', 'gallery'); // Specify folder in public directory
+    
+    // Call Netlify function to upload the file
+    const response = await fetch('/.netlify/functions/upload', {
+      method: 'POST',
+      body: formData,
+    });
+    
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(errorText || 'Failed to upload image');
+    }
+    
+    const result = await response.json();
+    return { path: result.path };
+  } catch (error) {
+    console.error('Error uploading image:', error);
+    throw error;
+  }
+};
+
 // Add a new gallery image
 export const addGalleryImage = async (image: Omit<GalleryImage, 'id' | 'created_at'>): Promise<GalleryImage> => {
   try {
