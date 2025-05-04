@@ -84,7 +84,7 @@ const Gallery = () => {
                             <img
                               src={image.imageUrl}
                               alt={image.title}
-                              className="w-full h-auto rounded-md"
+                              className="w-full h-auto"
                             />
                             <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-60 p-4 text-white">
                               <h3 className="font-medium">{image.title}</h3>
@@ -109,13 +109,11 @@ const Gallery = () => {
                     <Card className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer">
                       <CardContent className="p-0">
                         <div className="relative">
-                          <AspectRatio ratio={16 / 9}>
-                            <img
-                              src={image.imageUrl}
-                              alt={image.title}
-                              className="w-full h-full object-cover"
-                            />
-                          </AspectRatio>
+                          <img
+                            src={image.imageUrl}
+                            alt={image.title}
+                            className="w-full h-auto"
+                          />
                           <div className="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-30 transition-opacity flex items-end">
                             <div className="p-4 text-white w-full bg-gradient-to-t from-black/80 to-transparent">
                               <h3 className="font-medium text-lg">{image.title}</h3>
@@ -126,7 +124,7 @@ const Gallery = () => {
                       </CardContent>
                     </Card>
                   </DialogTrigger>
-                  <DialogContent className="max-w-4xl w-full p-1">
+                  <DialogContent className="max-w-6xl w-full p-1">
                     <img
                       src={image.imageUrl}
                       alt={image.title}
@@ -144,4 +142,3 @@ const Gallery = () => {
 };
 
 export default Gallery;
-

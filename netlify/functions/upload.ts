@@ -1,12 +1,8 @@
 
 import { Context } from "@netlify/functions";
 import { Octokit } from "octokit";
-import { createReadStream } from 'fs';
-import * as fs from 'fs';
-import * as path from 'path';
-import * as os from 'os';
 import * as crypto from 'crypto';
-import * as multiparty from 'multiparty';
+import * as path from 'path';
 
 export default async (req: Request, context: Context) => {
   // Only accept POST requests
@@ -41,7 +37,13 @@ export default async (req: Request, context: Context) => {
     const owner = process.env.GITHUB_OWNER;
     
     if (!token || !repo || !owner) {
-      return new Response("GitHub configuration missing", { status: 500 });
+      return new Response(JSON.stringify({ 
+        error: "GitHub configuration missing",
+        details: "Missing one or more required environment variables: GITHUB_TOKEN, GITHUB_REPO, GITHUB_OWNER" 
+      }), { 
+        status: 500,
+        headers: { 'Content-Type': 'application/json' }
+      });
     }
     
     // Create Octokit instance
@@ -49,6 +51,8 @@ export default async (req: Request, context: Context) => {
     
     // Define the upload path in the public folder
     const uploadPath = folder ? `public/${folder}/${fileName}` : `public/${fileName}`;
+    
+    console.log(`Uploading file to GitHub: ${uploadPath}`);
     
     // Upload file to GitHub repository
     const response = await octokit.rest.repos.createOrUpdateFileContents({
@@ -62,6 +66,8 @@ export default async (req: Request, context: Context) => {
         email: "netlify@function.com"
       }
     });
+    
+    console.log("GitHub upload response status:", response.status);
     
     // Return path to use for the image
     const imagePath = folder ? `/${folder}/${fileName}` : `/${fileName}`;
