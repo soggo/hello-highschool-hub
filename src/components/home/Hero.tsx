@@ -11,7 +11,8 @@ const Hero = () => {
             Welcome to <span className="text-primary">Dikor Comprehensive College</span> 
           </h1>
           <p className="text-lg md:text-xl text-gray-700 max-w-lg">
-          Discipline Keeping Organization (DIKOR) welcomes you to her Power House <br />DIKOR Comprehensive College.
+          Discipline Keeping Organization (DIKOR) welcomes you to her Power House: <br />
+          <span className='text-primary'>DIKOR Comprehensive College</span>. 
           </p>
           <p className="text-lg md:text-xl text-gray-700 max-w-lg">This Voluntary Organization's College is built to provide an all-round Functional Education that will bring out the Best in every product of her institution. 
             Founder: Adebisi Adenaya (Royor Of DIKOR)</p>
