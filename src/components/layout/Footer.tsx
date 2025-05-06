@@ -12,7 +12,7 @@ const Footer = () => {
           <div>
             <h3 className="font-display text-xl font-semibold mb-4">Dikor Comprehensive College</h3>
             <p className="text-white mb-4">
-             Discipline is our watchword!.
+             Discipline is our watchword!
             </p>
             <div className="flex space-x-4">
               <a href="#" className="text-white hover:text-white transition-colors">
