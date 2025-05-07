@@ -17,7 +17,7 @@ const Header = () => {
         <div className="flex items-center gap-2">
             <img src="DIKOR.png" alt="" className='object-center w-12'/>
           <Link to="/" className="font-display text-2xl font-bold text-gray-200">
-              Dikor Comprehensive College
+              DIKOR Comprehensive College
           </Link>
         </div>
 
