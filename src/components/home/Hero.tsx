@@ -28,8 +28,8 @@ const Hero = () => {
         <div className="relative hidden md:block">
           <div className="absolute inset-0 bg-red-600/10 rounded-lg -rotate-3"></div>
           <img 
-            src="/dikorsal.jpeg" 
-            alt="Students Dikor"
+            src="/DIKORsal.jpeg" 
+            alt="Students DIKOR"
             className="rounded-lg shadow-lg object-cover object-top w-full h-1/8 relative z-10 rotate-3"
           />
         </div>

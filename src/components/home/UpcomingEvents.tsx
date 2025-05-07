@@ -14,7 +14,7 @@ export type Event = {
 };
 
 // Define storage key
-const EVENTS_STORAGE_KEY = 'dikor_events';
+const EVENTS_STORAGE_KEY = 'DIKOR_events';
 
 // Function to get events from localStorage
 export const getLocalEvents = (): Event[] => {

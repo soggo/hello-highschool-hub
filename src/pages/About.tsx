@@ -86,15 +86,15 @@ const About = () => {
                     </p>
                     <p className="text-gray-700">
                      
-                    "Train a child in the way he should go, and when he is old, he will not depart from it." At Dikor, we provide that training—with discipline at its core.
+                    "Train a child in the way he should go, and when he is old, he will not depart from it." At DIKOR, we provide that training—with discipline at its core.
                       <br />
                     At DIKOR COMPREHENSIVE COLLEGE, we recognize that choosing a school is a defining decision, one that must consider key elements essential to a child's future. A solid academic foundation, coupled with firm disciplinary standards, prepares students not just for exams, but for life. We blend the best of traditional education with modern strategies, ensuring that every student emerges as a leader, thinker, and disciplined achiever.
                     </p>
                   </div>
                   <div className="relative">
                     <img 
-                      src="dikorab.jpeg" 
-                      alt="Dikor Students at work" 
+                      src="DIKORab.jpeg" 
+                      alt="DIKOR Students at work" 
                       className="rounded-lg shadow-lg"
                     />
                     <div className="absolute -bottom-4 -right-4 w-20 h-20 bg-primary/20 rounded-lg -z-10"></div>
