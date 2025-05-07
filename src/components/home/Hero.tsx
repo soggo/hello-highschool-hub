@@ -8,7 +8,7 @@ const Hero = () => {
       <div className="container mx-auto px-4 py-16 grid md:grid-cols-2 gap-8 items-center">
         <div className="space-y-9">
           <h1 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
-            Welcome to <span className="text-primary">Dikor Comprehensive College</span> 
+            Welcome to <span className="text-primary">DIKOR Comprehensive College</span> 
           </h1>
           <p className="text-lg md:text-xl text-gray-700 max-w-lg">
           Discipline Keeping Organization (DIKOR) welcomes you to her Power House: <br />
