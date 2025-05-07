@@ -69,10 +69,10 @@ const Footer = () => {
                 Whatsapp: (+234) 0807 994 7272
               </p>
               
-              {/* <p className="flex items-center gap-2">
+              <p className="flex items-center gap-2">
                 <Mail size={16} />
-                info@DIKORComprehensiveCollege.com
-              </p> */}
+                DikorCollege@gmail.com
+              </p>
             </address>
           </div>
         </div>
