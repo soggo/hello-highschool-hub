@@ -10,7 +10,7 @@ const Footer = () => {
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
           <div>
-            <h3 className="font-display text-xl font-semibold mb-4">Dikor Comprehensive College</h3>
+            <h3 className="font-display text-xl font-semibold mb-4">DIKOR Comprehensive College</h3>
             <p className="text-white mb-4">
              Discipline is our watchword!
             </p>
@@ -22,7 +22,7 @@ const Footer = () => {
                 <Twitter size={20} />
               </a>
               <a href="#" className="text-white hover:text-white transition-colors">
-                <Instagram size={20} />k
+                <Instagram size={20} />
               </a>
             </div>
           </div>
@@ -71,14 +71,14 @@ const Footer = () => {
               
               {/* <p className="flex items-center gap-2">
                 <Mail size={16} />
-                info@DikorComprehensiveCollege.com
+                info@DIKORComprehensiveCollege.com
               </p> */}
             </address>
           </div>
         </div>
         
         <div className="border-t border-gray-800 pt-6 mt-8 text-center text-white text-sm">
-          <p>&copy; {currentYear} Dikor Comprehensive College. All rights reserved.</p>
+          <p>&copy; {currentYear} DIKOR Comprehensive College. All rights reserved.</p>
         </div>
       </div>
     </footer>
