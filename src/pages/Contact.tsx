@@ -77,7 +77,7 @@ const Contact = () => {
                   </div>
                 </div>
                 
-                <div className="mt-8">
+                {/* <div className="mt-8">
                   <h3 className="font-bold text-lg mb-4">Connect With Us</h3>
                   <div className="flex space-x-4">
                     <a href="#" className="bg-gray-200 p-3 rounded-full hover:bg-primary/20 transition-colors">
@@ -101,7 +101,7 @@ const Contact = () => {
                       </svg>
                     </a>
                   </div>
-                </div>
+                </div> */}
               </div>
               
               {/* Contact Form */}

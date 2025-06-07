@@ -14,7 +14,7 @@ const Footer = () => {
             <p className="text-white mb-4">
              Discipline is our watchword!
             </p>
-            <div className="flex space-x-4">
+            {/* <div className="flex space-x-4">
               <a href="#" className="text-white hover:text-white transition-colors">
                 <Facebook size={20} />
               </a>
@@ -24,7 +24,7 @@ const Footer = () => {
               <a href="#" className="text-white hover:text-white transition-colors">
                 <Instagram size={20} />
               </a>
-            </div>
+            </div> */}
           </div>
           
           <div>
