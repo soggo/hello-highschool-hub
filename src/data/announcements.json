@@ -22,21 +22,5 @@
     "category": "Holiday",
     "id": "1745261236901",
     "created_at": "2025-04-21T18:47:16.901Z"
-  },
-  {
-    "title": "Examination commence next week",
-    "description": "Exams starts ",
-    "date": "March 99 999",
-    "category": "General",
-    "id": "1748261878763",
-    "created_at": "2025-05-26T12:17:58.764Z"
-  },
-  {
-    "title": "Examination commence next week",
-    "description": "Exams starts ",
-    "date": "March 99 999",
-    "category": "General",
-    "id": "1748261879678",
-    "created_at": "2025-05-26T12:17:59.678Z"
   }
 ]
