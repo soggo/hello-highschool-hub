@@ -60,6 +60,12 @@ const Footer = () => {
             <address className="not-italic text-white space-y-2">
               <p>Apa, Badagry</p>
               <p>Lagos</p>
+
+               <p className="flex items-center gap-2 mt-4">
+                <Phone size={16} />
+                Telephone: (+234) 0805 227 9421
+              </p>
+              
               <p className="flex items-center gap-2 mt-4">
                 <Phone size={16} />
                 Telephone: (+234) 0815 343 1521
@@ -68,7 +74,8 @@ const Footer = () => {
                 <Phone size={16} />
                 Whatsapp: (+234) 0807 994 7272
               </p>
-              
+
+               
               <p className="flex items-center gap-2">
                 <Mail size={16} />
                 DikorCollege@gmail.com
